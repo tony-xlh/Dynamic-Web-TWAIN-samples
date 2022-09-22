@@ -2,7 +2,8 @@
 <html>
 
 <head>
-  <title>Use Auto Feeder to scan</title>
+  <title>Proxy Scan</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.initiate.js"></script>
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.config.js"></script>
 </head>
@@ -82,7 +83,7 @@
         let scannersSelect = document.getElementById("scanners");
         let device = devices[scannersSelect.selectedIndex];
         await RemoteDWObject.SelectDeviceAsync(device);
-        await RemoteDWObject.AcquireImageAsync({IfShowUI:true},DWObject);
+        await RemoteDWObject.AcquireImageAsync({IfShowUI:false},DWObject);
       }
     }
   </script>
