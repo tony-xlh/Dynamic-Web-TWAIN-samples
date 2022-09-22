@@ -9,7 +9,7 @@
 
 <body>
   Server URL:
-  <input id="serverURL" type="text" value="http://green142.scannerproxy.com:18887/"></input>
+  <input id="serverURL" type="text" value="http://tony.scannerproxy.com:10085/"></input>
   <br/>
   Services:
   <select id="services" onChange="serviceSelected();"></select>
@@ -17,6 +17,7 @@
   Scanners:
   <select id="scanners" onChange="scannerSelected();"></select>
   <br/>
+  <input id="searchButton" type="button" value="Search Services" onclick="loadServices();"/>
   <input id="scanButton" type="button" value="Scan" onclick="AcquireImage();"/>
   <div id="dwtcontrolContainer" style="width: 350px; height: 380px;"></div>
   <script type="text/javascript">
@@ -31,9 +32,6 @@
     function Dynamsoft_OnReady() {
       DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer'); // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'
       console.log("ready");
-      if (DWObject) {
-        loadServices();
-      }
     }
 
     async function serviceSelected(){
@@ -84,7 +82,7 @@
         let scannersSelect = document.getElementById("scanners");
         let device = devices[scannersSelect.selectedIndex];
         await RemoteDWObject.SelectDeviceAsync(device);
-        await RemoteDWObject.AcquireImageAsync({IfShowUI:false},DWObject);
+        await RemoteDWObject.AcquireImageAsync({IfShowUI:true},DWObject);
       }
     }
   </script>
