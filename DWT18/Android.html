@@ -2,43 +2,48 @@
 <html>
 
 <head>
-  <title>eSCL Scanning</title>
+  <title>Proxy Scan</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.initiate.js"></script>
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.config.js"></script>
 </head>
 
 <body>
-  <input id="scanButton" type="button" value="Scan" onclick="AcquireImage();" disabled/>
+  Scanners:
+  <select id="scanners" onChange="scannerSelected();"></select>
+  <br/>
+  <input id="scanButton" type="button" value="Scan" onclick="AcquireImage();"/>
   <div id="dwtcontrolContainer" style="width: 350px; height: 380px;"></div>
   <script type="text/javascript">
     Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady); // Register OnWebTwainReady event. This event fires as soon as Dynamic Web TWAIN is initialized and ready to be used
 
-    var DWObject;
+    let DWObject;
+    let devices;
+    
 
     function Dynamsoft_OnReady() {
       DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer'); // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'
       console.log("ready");
-      if (DWObject) {
-        selectScanners();
-      }
+      loadDevices();
     }
     
-    async function selectScanners(){
-      let eSCLDevices = await DWObject.GetDevicesAsync(Dynamsoft.DWT.EnumDWT_DeviceType.ESCLSCANNER);
-      alert(eSCLDevices);
-      let result = await DWObject.SelectDeviceAsync(eSCLDevices[0]);
-      console.log(result);
-      if (result === true) {
-        document.getElementById("scanButton").disabled = "";
-      }
+    async function loadDevices(){
+      let scannersSelect = document.getElementById("scanners");
+      scannersSelect.innerHTML = "";
+      devices = await Dynamsoft.DWT.FindDevicesAsync("");
+      devices.forEach(device => {
+        let option = new Option();
+        option.value = device.displayName;
+        option.text = device.displayName;
+        scannersSelect.appendChild(option);
+      });
     }
     
-    async function AcquireImage() {
-      if (DWObject) {
-        await DWObject.AcquireImageAsync();
-      }
+    function AcquireImage(){
+      let index = document.getElementById("scanners").selectedIndex;
+      devices[index].AcquireImageAsync({}, DWObject);
     }
+
   </script>
 </body>
 
