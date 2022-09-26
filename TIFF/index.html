@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Use Auto Feeder to scan</title>
+  <title>Scan to TIFF</title>
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.initiate.js"></script>
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.config.js"></script>
 </head>
@@ -78,18 +78,18 @@
     }
     function AcquireImage() {
       if (DWObject) {
-				let OnAcquireImageSuccess = function () {
-					DWObject.CloseSource();
-				};
-				
-				let OnAcquireImageFailure = function (ec, es) {
-					DWObject.CloseSource();
-					alert(es);
-				};					
+        let OnAcquireImageSuccess = function () {
+          DWObject.CloseSource();
+        };
+        
+        let OnAcquireImageFailure = function (ec, es) {
+          DWObject.CloseSource();
+          alert(es);
+        };          
 
         DWObject.SelectSourceByIndex(document.getElementById("source").selectedIndex);
         DWObject.OpenSource();
-				 //If auto feeder
+         //If auto feeder
         if (document.getElementById("ADF").checked)
           DWObject.IfFeederEnabled = true;
         else
