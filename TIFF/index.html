@@ -57,6 +57,9 @@
       <option value="32773">TIFF_PACKBITS</option>
     </select>
     <br />
+    JPEG Quality:
+    <input type="text" id="JPEGQuality" value="100">
+    <br />
     <input type="button" value="Save as TIFF" onclick="Save();" />
   </div>
   <div id="dwtcontrolContainer" style="width: 350px; height: 380px;"></div>
@@ -128,7 +131,8 @@
         //https://www.dynamsoft.com/web-twain/docs/info/api/Dynamsoft_Enum.html#dynamsoftdwtenumdwt_tiffcompressiontype
         let compressionType = document.getElementById("compressionType").selectedOptions[0].value;
         DWObject.TIFFCompressionType = compressionType;
-
+        let JPEGQuality = document.getElementById("JPEGQuality").value;
+        DWObject.JPEGQuality = JPEGQuality;
         DWObject.SaveAllAsMultiPageTIFF("DynamicWebTWAIN.tiff", OnSuccess, OnFailure);
       }
     }
