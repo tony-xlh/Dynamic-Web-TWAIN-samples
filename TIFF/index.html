@@ -122,7 +122,7 @@
         let OnFailure = function () {
           alert("Fail");
         };
-        
+        DWObject.ClearTiffCustomTag(); //clear before setting
         let customTag = document.getElementById("customTag").value;
         if (customTag) {
           DWObject.SetTiffCustomTag(700, customTag, false); //https://www.dynamsoft.com/web-twain/docs/info/api/WebTwain_IO.html#settiffcustomtag
