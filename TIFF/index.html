@@ -9,7 +9,7 @@
 
 <body>
   <div>
-    Pixel type:
+    Pixel Type:
     <label for="BW">
       <input type="radio" id="BW" name="PixelType">B&amp;W </label>
     <label for="Gray">
@@ -42,6 +42,20 @@
   <div>
     Custom TIFF Tag:
     <input type="text" id="customTag">
+    <br />
+    TIFF Compression Type:
+    <select size="1" id="compressionType">
+      <option value="0">TIFF_AUTO</option>
+      <option value="1">TIFF_NONE</option>
+      <option value="2">TIFF_RLE</option>
+      <option value="3">TIFF_FAX3</option>
+      <option value="3">TIFF_T4</option>
+      <option value="4">TIFF_FAX4</option>
+      <option value="4">TIFF_T6</option>
+      <option value="5">TIFF_LZW</option>
+      <option value="7">TIFF_JPEG</option>
+      <option value="32773">TIFF_PACKBITS</option>
+    </select>
     <br />
     <input type="button" value="Save as TIFF" onclick="Save();" />
   </div>
@@ -110,7 +124,11 @@
         if (customTag) {
           DWObject.SetTiffCustomTag(700, customTag, false); //https://www.dynamsoft.com/web-twain/docs/info/api/WebTwain_IO.html#settiffcustomtag
         }
-        
+
+        //https://www.dynamsoft.com/web-twain/docs/info/api/Dynamsoft_Enum.html#dynamsoftdwtenumdwt_tiffcompressiontype
+        let compressionType = document.getElementById("compressionType").selectedOptions[0].value;
+        DWObject.TIFFCompressionType = compressionType;
+
         DWObject.SaveAllAsMultiPageTIFF("DynamicWebTWAIN.tiff", OnSuccess, OnFailure);
       }
     }
