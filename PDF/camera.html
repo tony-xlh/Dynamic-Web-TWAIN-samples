@@ -3,26 +3,20 @@
 
 <head>
   <title>Scan to PDF</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.initiate.js"></script>
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.config.js"></script>
   <script type="text/javascript" src="Resources/addon/dynamsoft.webtwain.addon.pdf.js"></script>
   <script type="text/javascript" src="Resources/addon/dynamsoft.webtwain.addon.camera.js"></script>
-  <style>
-  .panel {
-    border: 1px solid black;
-    padding: 5px;
-    width: 450px;
-  }
-  </style>
 </head>
 
 <body>
-  Input:
+  <h2>Input</h2>
   <div class="panel">
     <input type="button" value="Load Images" onclick="LoadImages();" />
     <input type="button" value="Camera" onclick="StartCamera();" />
   </div>
-  Settings:
+  <h2>Output</h2>
   <div class="panel">
     PDF Compression Type:
     <select size="1" id="compressionType">
