@@ -6,6 +6,7 @@
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.initiate.js"></script>
   <script type="text/javascript" src="Resources/dynamsoft.webtwain.config.js"></script>
   <script type="text/javascript" src="Resources/addon/dynamsoft.webtwain.addon.pdf.js"></script>
+  <script type="text/javascript" src="Resources/addon/dynamsoft.webtwain.addon.camera.js"></script>
   <style>
   .panel {
     border: 1px solid black;
@@ -18,37 +19,8 @@
 <body>
   Input:
   <div class="panel">
-    Pixel Type:
-    <label for="BW">
-      <input type="radio" id="BW" name="PixelType">B&amp;W </label>
-    <label for="Gray">
-      <input type="radio" id="Gray" name="PixelType">Gray</label>
-    <label for="RGB">
-      <input type="radio" id="RGB" name="PixelType" checked="checked">Color</label>
-    
-    <br/>
-  
-    <label>
-      <input type="checkbox" id="ADF" checked="checked">Auto Feeder</label>
-    <label>
-      <input type="checkbox" id="ShowUI" checked="checked">Show UI
-    </label>
-  
-    <br />
-    Resolution:
-    <select size="1" id="Resolution">
-      <option value="100">100</option>
-      <option value="150">150</option>
-      <option value="200">200</option>
-      <option value="300">300</option>
-    </select>
-  
-    <br />
-    Scanner:
-    <select size="1" id="source" style="width: 220px;"></select>
-    <br />
-    <input type="button" value="Scan" onclick="AcquireImage();" />
     <input type="button" value="Load Images" onclick="LoadImages();" />
+    <input type="button" value="Camera" onclick="StartCamera();" />
   </div>
   Settings:
   <div class="panel">
@@ -84,55 +56,13 @@
   <div id="dwtcontrolContainer" style="width: 350px; height: 380px;"></div>
   <script type="text/javascript">
     Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady); // Register OnWebTwainReady event. This event fires as soon as Dynamic Web TWAIN is initialized and ready to be used
-
+    Dynamsoft.DWT.UseLocalService = false;
     let DWObject;
 
     function Dynamsoft_OnReady() {
       DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer'); // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'
-      if (DWObject) {
-        let count = DWObject.SourceCount;
-        for (var i = 0; i < count; i++)
-          document.getElementById("source").options.add(new Option(DWObject.GetSourceNameItems(i), i));
-      }
     }
-    function AcquireImage() {
-      if (DWObject) {
-        let OnAcquireImageSuccess = function () {
-          DWObject.CloseSource();
-        };
-        
-        let OnAcquireImageFailure = function (ec, es) {
-          DWObject.CloseSource();
-          alert(es);
-        };          
-
-        DWObject.SelectSourceByIndex(document.getElementById("source").selectedIndex);
-        DWObject.OpenSource();
-         //If auto feeder
-        if (document.getElementById("ADF").checked)
-          DWObject.IfFeederEnabled = true;
-        else
-          DWObject.IfFeederEnabled = false;
-        DWObject.IfDisableSourceAfterAcquire = true;
-        //Pixel type
-        if (document.getElementById("BW").checked)
-          DWObject.PixelType = Dynamsoft.DWT.EnumDWT_PixelType.TWPT_BW;
-        else if (document.getElementById("Gray").checked)
-          DWObject.PixelType = Dynamsoft.DWT.EnumDWT_PixelType.TWPT_GRAY;
-        else if (document.getElementById("RGB").checked)
-          DWObject.PixelType = Dynamsoft.DWT.EnumDWT_PixelType.TWPT_RGB; 
-        //If show UI
-        if (document.getElementById("ShowUI").checked)
-          DWObject.IfShowUI = true;
-        else
-          DWObject.IfShowUI = false;
-        //Resolution
-        DWObject.Resolution = parseInt(document.getElementById("Resolution").value);
-
-        DWObject.AcquireImage(OnAcquireImageSuccess, OnAcquireImageFailure);
-      }
-    }
-
+    
     function Save(){
       if (DWObject) {
         let OnSuccess = function () {
@@ -174,6 +104,19 @@
       if (DWObject) {
         DWObject.IfShowFileDialog = true; // Open the system's file dialog to load image
         DWObject.LoadImageEx("", Dynamsoft.DWT.EnumDWT_ImageType.IT_ALL);
+      }
+    }
+    
+    function StartCamera(){
+      if (DWObject) {
+        DWObject.Addon.Camera.scanDocument().then(
+          function(){
+            console.log("OK");
+          }, 
+          function(error){
+            console.log(error.message);
+          }
+        );
       }
     }
   </script>
