@@ -45,6 +45,8 @@
     JPEG Quality:
     <input type="text" id="JPEGQuality" value="100">
     <br />
+    <input type="button" value="Edit" onclick="StartDocumentEditor();" />
+    <br />
     <input type="button" value="Save as PDF" onclick="Save();" />
   </div>
   <div id="dwtcontrolContainer" style="width: 350px; height: 380px;"></div>
@@ -112,6 +114,13 @@
             console.log(error.message);
           }
         );
+      }
+    }
+    
+    function StartDocumentEditor() {
+      if (DWObject) {
+        let documentEditor = DWObject.Viewer.createDocumentEditor();
+        documentEditor.show();
       }
     }
   </script>
