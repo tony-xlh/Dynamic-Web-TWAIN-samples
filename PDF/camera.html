@@ -55,6 +55,7 @@
 
     function Dynamsoft_OnReady() {
       DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer'); // Get the Dynamic Web TWAIN object that is embeded in the div with id 'dwtcontrolContainer'
+      DWObject.SetViewMode(2, 2);
     }
     
     function Save(){
