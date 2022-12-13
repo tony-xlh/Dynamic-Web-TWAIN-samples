@@ -20,7 +20,7 @@
   <div id="dwtcontrolContainer" style="width: 350px; height: 380px;"></div>
   <script type="text/javascript">
     Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', Dynamsoft_OnReady); // Register OnWebTwainReady event. This event fires as soon as Dynamic Web TWAIN is initialized and ready to be used
-    Dynamsoft.DWT.UseLocalService = false;
+    Dynamsoft.DWT.UseLocalService = true;
     let DWObject;
     let devices;
     
@@ -34,7 +34,7 @@
     async function loadDevices(){
       let scannersSelect = document.getElementById("scanners");
       scannersSelect.innerHTML = "";
-      devices = await Dynamsoft.DWT.FindDevicesAsync("");
+      devices = await DWObject.GetDevicesAsync();
       devices.forEach(device => {
         let option = new Option();
         option.value = device.displayName;
