@@ -10,7 +10,7 @@
 
 <body>
   Server URL:
-  <input id="serverURL" type="text" value="http://tony.scannerproxy.com:10085/"></input>
+  <input id="serverURL" type="text" value="https://rocky.scannerproxy.com/"></input>
   <br/>
   Services:
   <select id="services" onChange="serviceSelected();"></select>
@@ -42,7 +42,7 @@
       }
       let servicesSelect = document.getElementById("services");
       let selectedService = services[servicesSelect.selectedIndex];
-      RemoteDWObject = await Dynamsoft.DWT.CreateDWTObjectAsync(selectedService);
+      RemoteDWObject = await Dynamsoft.DWT.CreateRemoteScanObjectAsync(selectedService);
       loadScanners();
     }
 
@@ -57,9 +57,10 @@
       let serverURL = document.getElementById("serverURL").value;
       services = await Dynamsoft.DWT.FindDynamsoftServiceAsync(serverURL);
       services.forEach(service => {
+        console.log(service);
         let option = new Option();
-        option.value = service.attrs.hostname;
-        option.text = service.attrs.hostname;
+        option.value = service.attrs.name;
+        option.text = service.attrs.name;
         servicesSelect.appendChild(option);
       });
       serviceSelected();
@@ -68,7 +69,7 @@
     async function loadScanners(){
       let scannersSelect = document.getElementById("scanners");
       scannersSelect.innerHTML = "";
-      devices = await RemoteDWObject.GetDevicesAsync();
+      devices = await RemoteDWObject.getDevices();
       devices.forEach(device => {
         console.log(device);
         let option = new Option();
@@ -82,8 +83,8 @@
       if (RemoteDWObject) {
         let scannersSelect = document.getElementById("scanners");
         let device = devices[scannersSelect.selectedIndex];
-        await RemoteDWObject.SelectDeviceAsync(device);
-        await RemoteDWObject.AcquireImageAsync({IfShowUI:false},DWObject);
+        await RemoteDWObject.selectDevice(device);
+        await RemoteDWObject.acquireImage({IfShowUI:false},DWObject);
       }
     }
   </script>
