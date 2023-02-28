@@ -4,17 +4,37 @@
 <head>
   <title>CDN Example</title>
   <!--<script src="https://unpkg.com/dwt@18.0.0/dist/dynamsoft.webtwain.min.js"></script>-->
-  <script src="http://192.168.8.65:8000/npm/dynamsoft.webtwain.min.js"></script>
+  <script src="/npm/dynamsoft.webtwain.min.js"></script>
+  <style>
+    .app {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    .scanButton {
+      height: 25px;
+    }
+
+    #dwtcontrolContainer {
+      width: 100%;
+      height: calc(100% - 25px);
+    }
+  </style>
 </head>
 
 <body>
-  <input type="button" value="Scan" onclick="AcquireImage();" />
-  <div id="dwtcontrolContainer" style="width: 350px; height: 380px;"></div>
+  <div class="app">
+    <input class="scanButton" type="button" value="Scan" onclick="AcquireImage();" />
+    <div id="dwtcontrolContainer"></div>
+  </div>
   <script type="text/javascript">
     let DWObject;
     Dynamsoft.DWT.AutoLoad = false;
     //Dynamsoft.DWT.ResourcesPath = "https://unpkg.com/dwt@18.0.0/dist";
-    Dynamsoft.DWT.ResourcesPath = "http://192.168.8.65:8000/npm";
+    Dynamsoft.DWT.ResourcesPath = "/npm";
     init();
 
     function init(){
@@ -24,7 +44,7 @@
         DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
         DWObject.Viewer.width = "100%";
         DWObject.Viewer.height = "100%";
-        DWObject.SetViewMode(2,2);
+        DWObject.SetViewMode(1,1);
       });
       Dynamsoft.DWT.Load();
     }
