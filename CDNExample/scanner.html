@@ -38,6 +38,13 @@
     init();
 
     function init(){
+      //do not show notification about license 
+      Dynamsoft.OnLTSConnectionFailure = function(){};
+      Dynamsoft.OnLTSReturnedAnError = function () { };
+      Dynamsoft.OnLTSUUIDError = function () { };
+      Dynamsoft.OnLTSConnectionWarning= function(){};
+      Dynamsoft.OnLTSPublicLicenseMessage = function () { };
+      Dynamsoft.DWT.OnLicenseException= function(){ }
       Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer',Width: 270, Height: 350 }];
       Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function () {
         console.log("ready");
