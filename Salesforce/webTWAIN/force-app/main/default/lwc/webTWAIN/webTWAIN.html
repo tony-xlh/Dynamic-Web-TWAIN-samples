@@ -8,6 +8,10 @@
           options={scannerOptions}
           onchange={handleScannerChange}
       ></lightning-select>
+      <lightning-button label="Scan" onclick={scan}></lightning-button>
+      <div lwc:if={imageURL}>
+        <img src={imageURL} alt="scanned"/>
+      </div>
     </div>
   </lightning-card>
 </template>
