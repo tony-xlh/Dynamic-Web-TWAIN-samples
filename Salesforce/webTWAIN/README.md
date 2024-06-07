@@ -1,6 +1,12 @@
-# Salesforce DX Project: Next Steps
+# Web TWAIN Salesforce DX Project
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+This is a demo project accessing document scanners via [Dynamic Web TWAIN](https://www.dynamsoft.com/web-twain/overview/) in a lightning web component.
+
+
+
+https://github.com/tony-xlh/Dynamic-Web-TWAIN-samples/assets/5462205/0d40e925-1fa1-4074-92af-9ae301944570
+
+
 
 ## How Do You Plan to Deploy Your Changes?
 
