@@ -1,4 +1,4 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { loadScript, loadStyle } from 'lightning/platformResourceLoader';
 import dwt from '@salesforce/resourceUrl/dwt';
@@ -8,6 +8,7 @@ export default class WebTWAIN extends LightningElement {
     dwtWidth = 320;
     dwtHeight = 480;
     curScannerIndex = -1;
+    @api scannerOptions = [];
     
     showMessage(title, msg, succeed) {
         this.dispatchEvent(
@@ -44,12 +45,11 @@ export default class WebTWAIN extends LightningElement {
     initDevices(devices) {
         this.curScannerIndex = -1;
         this.devices = devices;
-        const devicesSelector = this.template.querySelector('lightning-select');
         let options = [];
         for (let index = 0; index < this.devices.length; index ++) {
             options.push({label: this.devices[index].displayName, value: index});
         }
-        devicesSelector.options = options;
+        this.scannerOptions = options;
         // to select a default device
         if (this.devices && this.devices.length != 0) {
             this.curScannerIndex = 0;
