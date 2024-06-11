@@ -161,25 +161,4 @@ export default class WebTWAIN extends LightningElement {
             this.showMessage('saving', error.message);
         }
     }
-
-    toPdfBlob() {
-        const me = this;
-        try {
-            // you can upload the blob later, all HTTPUpload directly, make sure url is trusted in salesforce
-            this.DWTObject.ConvertToBlob(
-                this.DWTObject.SelectAllImages(),
-                Dynamsoft.DWT.EnumDWT_ImageType.IT_PDF,
-                function (result, indices, type) {
-                    me.showMessage('converting to pdf successful', 'blob size: ' + result.size, true);
-                },
-                function (errorCode, errorString) {
-                    me.showMessage('converting to pdf', errorString);
-                }
-            );
-        }
-        catch(error)
-        {
-            this.showMessage('converting to pdf', error.message);
-        }
-    }
 }
