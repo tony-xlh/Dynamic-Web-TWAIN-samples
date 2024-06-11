@@ -3,6 +3,16 @@
 This is a demo project accessing document scanners via [Dynamic Web TWAIN](https://www.dynamsoft.com/web-twain/overview/) in a lightning web component.
 
 
+Using the default JavaScript library:
+
+
+
+https://github.com/tony-xlh/Dynamic-Web-TWAIN-samples/assets/5462205/9fafc9a1-e8fc-4efb-a5ec-6452c46951b4
+
+
+
+
+Using the REST API:
 
 https://github.com/tony-xlh/Dynamic-Web-TWAIN-samples/assets/5462205/0d40e925-1fa1-4074-92af-9ae301944570
 
