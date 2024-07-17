@@ -42,4 +42,7 @@ export default class WebTWAINiframe extends LightningElement {
   merge(){
     this.dwtFrame.contentWindow.postMessage("getPDF");
   }
+  showEditor(){
+    this.dwtFrame.contentWindow.postMessage("showEditor");
+  }
 }
