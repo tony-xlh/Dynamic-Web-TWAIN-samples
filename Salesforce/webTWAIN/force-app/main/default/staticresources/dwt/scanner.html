@@ -1,0 +1,78 @@
+<html>
+<head>
+  <title>Hello World</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+  <script src="https://cdn.jsdelivr.net/npm/dwt@18.5.0/dist/dynamsoft.webtwain.min.js"></script>
+  <style>
+    #dwtcontrolContainer {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="dwtcontrolContainer"></div>
+  <script type="text/javascript">
+    let DWObject;
+    init();
+
+    function init(){
+      Dynamsoft.DWT.ProductKey = "t01898AUAAGiondC54qOmo2LIG8bjkJTt5qZdzSWl6PpKlQS6mjY0CRXxy8Uub2CqtTpVdOHoLB33CA8bTlZpmDk0MneeN/Tt8cvJAU7t71Tp78QAJ285RZ7rMGy77dZ5eQIT8FoBPY7DAaAEtloq4D3ttcECaAFqAGrVAAu4XEX78yl1QMqv/2xodnKAU/s7y4D0cWKAk7ecMSA+iFviapctIChPzgmgBeglgP0iawIiNUAL0AYgENR5/QItaSx5";
+      Dynamsoft.DWT.AutoLoad = false;
+      Dynamsoft.DWT.ServiceInstallerLocation = "https://demo.dynamsoft.com/DWT/Resources/dist/";
+      Dynamsoft.DWT.ResourcesPath = "https://cdn.jsdelivr.net/npm/dwt@18.5.0/dist";
+      Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer',Width: 270, Height: 350 }];
+      Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function () {
+        DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
+        DWObject.Viewer.width = "100%";
+        DWObject.Viewer.height = "100%";
+        DWObject.SetViewMode(2,2);
+      });
+      Dynamsoft.DWT.Load();
+      window.addEventListener(
+        "message",
+        async (event) => {
+          console.log("received message in iframe");
+          console.log(event);
+          if (event.data === "acquire") {
+            AcquireImage();
+          } else if (event.data === "getPDF") {
+            ConvertToPDFBase64();
+          }
+        },
+        false,
+      );
+    }
+
+    function ConvertToPDFBase64(){
+      const success = (result, indices, type) => {
+        window.parent.postMessage(result);
+      }
+      const error = (error) => {
+        console.log(error);
+      }
+      DWObject.ConvertToBase64(
+        DWObject.SelectAllImages(),
+        Dynamsoft.DWT.EnumDWT_ImageType.IT_PDF,
+        success,
+        error
+      )
+    }
+
+    function AcquireImage() {
+      if (DWObject) {
+        DWObject.SelectSourceAsync().then(function () {
+          return DWObject.AcquireImageAsync({ 
+            IfCloseSourceAfterAcquire: true 
+          });
+        }).catch(function (exp) {
+          alert(exp.message);
+        });
+      }
+    }
+  </script>
+</body>
+</html>
