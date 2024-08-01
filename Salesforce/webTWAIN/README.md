@@ -8,7 +8,7 @@ It contains three lightning web components:
 * [webTWAINiframe](./force-app/main/default/lwc/webTWAINiframe). The iframe version which embeds the document scanner in an iframe to bypass some restrictions of Salesforce.
 * [webTWAINREST](./force-app/main/default/lwc/webTWAINREST). The REST version which communicates with Dynamsoft Service via REST API.
 
-## The iframe approach
+## The iframe Approach
 
 Since Salesforce has many restrictions, it is recommended to use the iframe approach.
 
