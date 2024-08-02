@@ -20,7 +20,6 @@
         Scanner:
         <select id="select-scanner"></select>
       </label>
-      <input type="button" value="Scan" onclick="AcquireImage();" />
       <br/>
       <label>
         Use the scanner's configuration UI:
@@ -54,6 +53,10 @@
           <option selected>Color</option>
         </select>
       </label>
+      </br>
+      <input type="button" value="Scan" onclick="AcquireImage();" />
+      <input type="button" value="Edit" onclick="Edit();" />
+      <input type="button" value="Load Images" onclick="LoadImages();" />
       <div id="dwtcontrolContainer"></div>
     </div>
     <div class="barcode-reader">
@@ -118,6 +121,23 @@
       }
     }
 
+    function Edit(){
+      const imageEditor = DWObject.Viewer.createImageEditor();
+      imageEditor.show();
+    }
+
+    function LoadImages(){
+      DWObject.LoadImageEx(
+        "", //file name can be empty if "Open File" dialog is called.
+        Dynamsoft.DWT.EnumDWT_ImageType.IT_ALL,
+        function () {
+          console.log("success");
+        },
+        function (errorCode, errorString) {
+          console.log(errorString);
+        }
+      );
+    }
   </script>
 </body>
 
