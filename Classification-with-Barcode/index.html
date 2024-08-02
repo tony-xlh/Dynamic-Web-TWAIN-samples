@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scan and Classify Documents with Barcodes</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <script src="https://unpkg.com/dwt@18.5.0/dist/dynamsoft.webtwain.min.js"></script>
+    <style>
+      .container {
+        display: flex;
+        flex-wrap: nowrap;
+      }
+    </style>
+</head>
+<body>
+  <h2>Scan and Classify Documents with Barcodes</h2>
+  <div class="container">
+    <div class="document-scanner" style="margin-right:20px;">
+      <h3>Step 1: Scan</h3>
+      <label>
+        Scanner:
+        <select id="select-scanner"></select>
+      </label>
+      <input type="button" value="Scan" onclick="AcquireImage();" />
+      <br/>
+      <label>
+        Use the scanner's configuration UI:
+        <input type="checkbox" id="showUI"/>
+      </label>
+      <br/>
+      <label>
+        Auto Document Feeder:
+        <input type="checkbox" id="ADF"/>
+      </label>
+      <br/>
+      <label>
+        Duplex:
+        <input type="checkbox" id="duplex"/>
+      </label>
+      <br/>
+      <label>
+        Resolution:
+        <select id="select-resolution">
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="300" selected>300</option>
+        </select>
+      </label>
+      <br/>
+      <label>
+        Pixel Type:
+        <select id="select-pixeltype">
+          <option>Black & White</option>
+          <option>Gray</option>
+          <option selected>Color</option>
+        </select>
+      </label>
+      <div id="dwtcontrolContainer"></div>
+    </div>
+    <div class="barcode-reader">
+      <h3>Step 2: Classify</h3>
+    </div>
+  </div>
+  <script type="text/javascript">
+    let DWObject;
+    let scanners;
+    initDWT();
+
+    function initDWT(){
+      Dynamsoft.DWT.AutoLoad = false;
+      Dynamsoft.DWT.Containers = [];
+      Dynamsoft.DWT.ResourcesPath = "https://unpkg.com/dwt@18.5.0/dist";
+      let oneDayTrialLicense = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ==";
+      Dynamsoft.DWT.ProductKey = oneDayTrialLicense;  
+      Dynamsoft.DWT.CreateDWTObjectEx(
+        {
+          WebTwainId: 'dwtcontrol'
+        },
+        function(obj) {
+          DWObject = obj;
+          DWObject.Viewer.bind(document.getElementById('dwtcontrolContainer'));
+          DWObject.Viewer.height = "480px";
+          DWObject.Viewer.width = "360px";
+          DWObject.Viewer.show();
+          DWObject.Viewer.setViewMode(2,2);
+          loadScanners();
+        },
+        function(err) {
+          console.log(err);
+        }
+      );
+    }
+
+    async function loadScanners(){
+      scanners = await DWObject.GetDevicesAsync();
+      let selScanners = document.getElementById("select-scanner");
+      selScanners.innerHTML = "";
+      for (let index = 0; index < scanners.length; index++) {
+        const scanner = scanners[index];
+        let option = new Option(scanner.displayName,index);
+        selScanners.appendChild(option);
+      }
+    }
+
+    async function AcquireImage() {
+      if (DWObject) {
+        const selectedIndex = document.getElementById("select-scanner").selectedIndex;
+        const options = {
+          IfShowUI:document.getElementById("showUI").checked,
+          PixelType:document.getElementById("select-pixeltype").selectedIndex,
+          Resolution:document.getElementById("select-resolution").selectedOptions[0].value,
+          IfFeederEnabled:document.getElementById("ADF").checked,
+          IfDuplexEnabled:document.getElementById("duplex").checked
+        };
+        await DWObject.SelectDeviceAsync(scanners[selectedIndex]);
+        await DWObject.OpenSourceAsync();
+        await DWObject.AcquireImageAsync(options);
+        await DWObject.CloseSourceAsync();
+      }
+    }
+
+  </script>
+</body>
+
+</html>
