@@ -90,6 +90,22 @@
     let documents = []; //document object: {barcodes:[],imageIndex:[]}
     initDWT();
     initDBR();
+    addListenerForSalesForce();
+    
+    //only for salesforce:
+    function addListenerForSalesForce(){
+      window.addEventListener(
+        "message",
+        async (event) => {
+          console.log("received message in iframe");
+          console.log(event);
+          if (event.data === "acquire") {
+            window.parent.postMessage(documents);
+          }
+        },
+        false,
+      );
+    }
 
     function initDWT(){
       Dynamsoft.DWT.AutoLoad = false;
