@@ -70,7 +70,8 @@
       </br>
       <input type="button" value="Scan" onclick="AcquireImage();" />
       <input type="button" value="Edit" onclick="Edit();" />
-      <input type="button" value="Load Images" onclick="LoadImages();" />
+      <input type="button" value="Load Files" onclick="LoadFiles();" />
+      <a href="https://github.com/tony-xlh/Dynamic-Web-TWAIN-samples/releases/download/assets/forms-with-barcodes.pdf" target="_blank">Sample PDF</a>
       <div id="dwtcontrolContainer"></div>
     </div>
     <div class="barcode-reader">
@@ -238,7 +239,7 @@
       imageEditor.show();
     }
 
-    function LoadImages(){
+    function LoadFiles(){
       DWObject.LoadImageEx(
         "", //file name can be empty if "Open File" dialog is called.
         Dynamsoft.DWT.EnumDWT_ImageType.IT_ALL,
