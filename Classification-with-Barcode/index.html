@@ -77,6 +77,13 @@
     <div class="barcode-reader">
       <h3>Step 2: Classify</h3>
       <input type="button" value="Classify"  class="classify-button" onclick="Classify();" />
+      <label>
+        Barcode Position:
+        <select class="barcode-position">
+          <option>First Page</option>
+          <option>Last Page</option>
+        </select>
+      </label>
       <div class="documents"></div>
     </div>
   </div>
@@ -87,6 +94,8 @@
     let DWObject;
     let scanners;
     let router;
+    const FIRST = 0;
+    const LAST = 1;
     let documents = []; //document object: {barcodes:[],imageIndex:[]}
     initDWT();
     initDBR();
@@ -173,6 +182,7 @@
 
     async function Classify(){
       documents = [];
+      const barcodePosition = document.getElementsByClassName("barcode-position")[0].selectedIndex;
       const total = DWObject.HowManyImagesInBuffer;
       let doc;
       for (let i = 0; i < total; i++) {
@@ -182,13 +192,26 @@
         console.log(barcodeReadingResult);
         if (barcodeReadingResult.items.length>0) {
           if (doc) {
+            if (barcodePosition === LAST) {
+              doc.imageIndex.push(i);
+              doc.barcodes = barcodeReadingResult.items;    
+            }
             documents.push(doc);
           }
           doc = {barcodes:[],imageIndex:[]} //reinit a document
-          doc.barcodes = barcodeReadingResult.items;
-          doc.imageIndex.push(i);
+          if (barcodePosition === FIRST) {
+            doc.imageIndex.push(i);
+            doc.barcodes = barcodeReadingResult.items;
+          }
         }else{
-          if (doc) {
+          if (barcodePosition === FIRST) {
+            if (doc) {
+              doc.imageIndex.push(i);
+            }
+          }else{
+            if (!doc) {
+              doc = {barcodes:[],imageIndex:[]} //init a document
+            }
             doc.imageIndex.push(i);
           }
         }
