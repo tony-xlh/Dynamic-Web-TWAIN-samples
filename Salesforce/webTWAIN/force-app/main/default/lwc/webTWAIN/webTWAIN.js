@@ -70,7 +70,7 @@ export default class WebTWAIN extends LightningElement {
             Dynamsoft.DWT.ResourcesPath = dwt;
             Dynamsoft.DWT.ServiceInstallerLocation = "https://demo.dynamsoft.com/DWT/Resources/dist/";
             //request your trial license here: https://www.dynamsoft.com/customer/license/trialLicense/?product=dwt
-            Dynamsoft.DWT.ProductKey = "t01898AUAABL9Dpoj+I6g/V6TaezNQ9c6V9CDtdWno1BkmuaS8/f8SuIuj9oSNQQWygCHd+5q5r6jwfWfYHT0/648j/UFVye/nOzg1PZOlfZOdHDyllNknIdx2e3hOy9PYAaeM6DbcdgA1MBSywF4ubU2WAAtQA1ArRpgAZerOP98yjEg9dd/NrQ42cGp7Z11QNo40cHJW84UEB9lmNJqpyUgqE/ODqAF6CWA9SI7BUSOAC1ATwBCYBzj8AGcaiqf";
+            Dynamsoft.DWT.ProductKey = "t01908AUAAJ5Bl8Z4B4dVB1cTLDTcaFDf8vRl/3kmHuhVOoPrJbLdXy1uMDVAFDVHRCDxV7iyFsROWUYU950cJKo6NnOXHav2+uVkB6e2d6q0d6KDk4+cImMexnLaLu9bN3AB3hnQ/TrsAGqg1HICPsNWGyyAFqAGoFYNsIDbt7h+fMo5IPXqPwe6OtnBqe2ddUDaONHByUfOFBAfxU1pdSoBQX1zDgAtQG8BbD+yS0DkDNAC9AK4MQTngp8BjmEsSg==";
             const container = me.template.querySelector('div.dwtContainer');
             Dynamsoft.DWT.RootNode = container;
             Dynamsoft.DWT.AutoLoadCSS = false;
@@ -88,6 +88,23 @@ export default class WebTWAIN extends LightningElement {
         }catch(error) {
             this.showMessage("creating dwt object", error.message);
         }
+    }
+
+    getBase64(){
+      const indices = this.DWTObject.SelectAllImages();
+      this.DWTObject.ConvertToBase64(
+        indices,
+        Dynamsoft.DWT.EnumDWT_ImageType.IT_PDF,
+        function (result, indices, type) {
+          let base64 = result.getData(0, result.getLength()) 
+          console.log(base64);
+          alert(base64);
+        },
+        function (errorCode, errorString) {
+          console.log(errorString);
+          alert(errorString);
+        }
+      );
     }
 
     async acquire() {
