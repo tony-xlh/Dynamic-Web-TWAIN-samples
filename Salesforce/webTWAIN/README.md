@@ -36,6 +36,14 @@ Using the REST API:
 https://github.com/tony-xlh/Dynamic-Web-TWAIN-samples/assets/5462205/0d40e925-1fa1-4074-92af-9ae301944570
 
 
+Barcode Scanning:
+
+
+
+https://github.com/user-attachments/assets/d1a3e387-83fc-4dd2-93cd-7adfa53f5149
+
+
+
 For details, please check out this blog: [Access Document Scanners in Salesforce's Lightning Web Component](https://www.dynamsoft.com/codepool/document-scanner-lightning-web-component-in-salesforce.html)
 
 
