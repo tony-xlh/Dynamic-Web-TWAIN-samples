@@ -7,6 +7,7 @@ It contains three lightning web components:
 * [webTWAIN](./force-app/main/default/lwc/webTWAIN). The standard version directly using the JavaScript library of Web TWAIN. It needs extra setups of things like trusted URLs.
 * [webTWAINiframe](./force-app/main/default/lwc/webTWAINiframe). The iframe version which embeds the document scanner in an iframe to bypass some restrictions of Salesforce.
 * [webTWAINREST](./force-app/main/default/lwc/webTWAINREST). The REST version which communicates with Dynamsoft Service via REST API.
+* [barcodeScanner](./force-app/main/default/lwc/barcodeScanner). Scan barcodes with Dynamsoft Barcode Reader.
 
 ## The iframe Approach
 
