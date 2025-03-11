@@ -2,7 +2,7 @@
 
 This is a demo project accessing document scanners via [Dynamic Web TWAIN](https://www.dynamsoft.com/web-twain/overview/) in a lightning web component.
 
-It contains three lightning web components:
+It contains several lightning web components:
 
 * [webTWAIN](./force-app/main/default/lwc/webTWAIN). The standard version directly using the JavaScript library of Web TWAIN. It needs extra setups of things like trusted URLs.
 * [webTWAINiframe](./force-app/main/default/lwc/webTWAINiframe). The iframe version which embeds the document scanner in an iframe to bypass some restrictions of Salesforce.
