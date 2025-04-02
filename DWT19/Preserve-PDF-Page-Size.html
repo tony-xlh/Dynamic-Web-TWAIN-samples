@@ -52,7 +52,10 @@
       // Optional PDF rasterizer add-on for enhanced PDF handling, not necessary for operation
       DWTObject.Addon.PDF.SetReaderOptions({
         convertMode: Dynamsoft.DWT.EnumDWT_ConvertMode.CM_RENDERALL, //Rasterize all PDFs
-        preserveUnmodifiedOnSave: true 
+        preserveUnmodifiedOnSave: true,
+        renderOptions: {
+          resolution: 300, //DPI
+        }
       });
       DWTObject.IfShowFileDialog = true; //"Open File" dialog will be opened.
       DWTObject.LoadImageEx(
