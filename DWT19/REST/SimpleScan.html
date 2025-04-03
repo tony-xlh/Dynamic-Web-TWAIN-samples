@@ -80,6 +80,7 @@
       let license = document.getElementById("licenseInput").value;
       let selectedScannerIndex = document.getElementById("scanners").selectedIndex;
       let selectedScanner = scanners[selectedScannerIndex];
+      let config = JSON.parse(document.getElementById("config").value);
       jobuid = await WebTWAINService.CreateScanJob(selectedScanner.device,config);
     }
 
