@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple REST API Example</title>
+  <style>
+    #config {
+      width: 300px;
+      height: 200px;
+      resize: none;
+    }
+    #scannedImages img {
+      max-height: 150px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <label>
+      License: <input type="password" id="licenseInput" />
+    </label>
+    <label>
+      Scanners:
+      <select id="scanners">
+      </select>
+    </label>
+    <input type="button" value="Scan" onclick="StartScanning();" />
+    <span id="status"></span>
+    <br/>
+    <label>
+      Config:
+      <br/>
+      <textarea id="config">
+        {
+          "Resolution": 200,
+          "IfFeederEnabled": false,
+          "IfDuplexEnabled": false,
+          "IfShowUI": true
+        }
+      </textarea>
+    </label>
+    <div id="scannedImages"></div>
+  </div>
+  <script type="text/javascript">
+    let endPoint = "http://127.0.0.1:18622";
+    let scanners = [];
+    let jobuid = "";
+    listScanners();
+    async function listScanners(){
+      updateStatus("Listing scanners...");
+      let requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+      };
+
+      let response = await fetch(endPoint+"/api/device/scanners", requestOptions);
+      scanners = await response.json();
+      console.log(scanners);
+      let scannersSelect = document.getElementById("scanners");
+      scannersSelect.innerHTML = "";
+      for (let i = 0; i < scanners.length; i++){
+        let option = document.createElement("option");
+        option.value = scanners[i].name;
+        option.innerHTML = scanners[i].name;
+        scannersSelect.appendChild(option);
+      }
+      updateStatus("");
+    }
+
+    async function StartScanning() { 
+      updateStatus("Scanning...");
+      try {
+        await CreateScanJob();
+        await AcquireImages();
+        updateStatus("Done");  
+      } catch (error) {
+        updateStatus(error);
+      }
+    }
+
+    async function CreateScanJob(){
+      jobuid = "";
+      let scannerName = document.getElementById("scanners").value;
+      let license = document.getElementById("licenseInput").value;
+      let selectedScannerIndex = document.getElementById("scanners").selectedIndex;
+      let selectedScanner = scanners[selectedScannerIndex];
+      let myHeaders = new Headers();
+      myHeaders.append("X-DICS-LICENSE-KEY", license);
+      myHeaders.append("Content-Type", "application/json");
+      var config = JSON.parse(document.getElementById("config").value);
+      var raw = JSON.stringify({
+        "autoRun": true,
+        "device": selectedScanner.device,
+        "config": config
+      });
+      console.log(raw);
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw
+      };
+
+      let response = await fetch(endPoint+"/api/device/scanners/jobs", requestOptions);
+      console.log(response);
+      if (response.status === 201) {
+        let object = await response.json();
+        console.log(object);
+        jobuid = object.jobuid;
+        return jobuid;
+      }
+      throw new Error("Failed to create scan job: " + response.status);
+    }
+
+    async function AcquireImages(){
+      let status = await GetImage();
+      while (status === 200) {
+        console.log("Image acquired successfully.");
+        status = await GetImage();
+      }
+    }
+
+    async function GetImage(){
+      var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+      };
+      let response = await fetch(endPoint+"/api/device/scanners/jobs/"+jobuid+"/next-page", requestOptions);
+      console.log(response);
+      if (response.status === 200) {
+        let blob = await response.blob();
+        AppendImage(blob);
+      }
+      return response.status;
+    }
+
+    function AppendImage(blob){
+      let url = URL.createObjectURL(blob);
+      let img = document.createElement("img");
+      img.src = url;
+      document.getElementById("scannedImages").appendChild(img);
+    }
+
+    function updateStatus(info){
+      document.getElementById("status").innerHTML = info;
+    }
+  </script>
+</body>
+</html>
