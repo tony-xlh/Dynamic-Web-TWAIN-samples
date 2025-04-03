@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Simple REST API Example</title>
+  <script src="RESTAPI.js"></script>
   <style>
     #config {
       width: 300px;
@@ -18,7 +19,7 @@
 <body>
   <div class="app">
     <label>
-      License: <input type="password" id="licenseInput" />
+      License: <input type="password" id="licenseInput" onchange="updateLicense();" />
     </label>
     <label>
       Scanners:
@@ -43,19 +44,13 @@
     <div id="scannedImages"></div>
   </div>
   <script type="text/javascript">
-    let endPoint = "http://127.0.0.1:18622";
     let scanners = [];
     let jobuid = "";
+    WebTWAINService.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTAwMjI3NzYzLVRYbFFjbTlxIiwibWFpblNlcnZlclVSTCI6Imh0dHBzOi8vbWx0cy5keW5hbXNvZnQuY29tIiwib3JnYW5pemF0aW9uSUQiOiIxMDAyMjc3NjMiLCJzdGFuZGJ5U2VydmVyVVJMIjoiaHR0cHM6Ly9zbHRzLmR5bmFtc29mdC5jb20iLCJjaGVja0NvZGUiOjE4OTc4MDUzNDV9";
     listScanners();
     async function listScanners(){
       updateStatus("Listing scanners...");
-      let requestOptions = {
-        method: 'GET',
-        redirect: 'follow'
-      };
-
-      let response = await fetch(endPoint+"/api/device/scanners", requestOptions);
-      scanners = await response.json();
+      scanners = await WebTWAINService.listScanners();
       console.log(scanners);
       let scannersSelect = document.getElementById("scanners");
       scannersSelect.innerHTML = "";
@@ -85,53 +80,16 @@
       let license = document.getElementById("licenseInput").value;
       let selectedScannerIndex = document.getElementById("scanners").selectedIndex;
       let selectedScanner = scanners[selectedScannerIndex];
-      let myHeaders = new Headers();
-      myHeaders.append("X-DICS-LICENSE-KEY", license);
-      myHeaders.append("Content-Type", "application/json");
-      var config = JSON.parse(document.getElementById("config").value);
-      var raw = JSON.stringify({
-        "autoRun": true,
-        "device": selectedScanner.device,
-        "config": config
-      });
-      console.log(raw);
-      var requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw
-      };
-
-      let response = await fetch(endPoint+"/api/device/scanners/jobs", requestOptions);
-      console.log(response);
-      if (response.status === 201) {
-        let object = await response.json();
-        console.log(object);
-        jobuid = object.jobuid;
-        return jobuid;
-      }
-      throw new Error("Failed to create scan job: " + response.status);
+      jobuid = await WebTWAINService.CreateScanJob(selectedScanner.device,config);
     }
 
     async function AcquireImages(){
-      let status = await GetImage();
-      while (status === 200) {
+      let imgBlob = await WebTWAINService.GetImage(jobuid);
+      while (imgBlob) {
         console.log("Image acquired successfully.");
-        status = await GetImage();
+        AppendImage(imgBlob);
+        imgBlob = await WebTWAINService.GetImage(jobuid);
       }
-    }
-
-    async function GetImage(){
-      var requestOptions = {
-        method: 'GET',
-        redirect: 'follow'
-      };
-      let response = await fetch(endPoint+"/api/device/scanners/jobs/"+jobuid+"/next-page", requestOptions);
-      console.log(response);
-      if (response.status === 200) {
-        let blob = await response.blob();
-        AppendImage(blob);
-      }
-      return response.status;
     }
 
     function AppendImage(blob){
@@ -143,6 +101,11 @@
 
     function updateStatus(info){
       document.getElementById("status").innerHTML = info;
+    }
+
+    function updateLicense(){
+      let license = document.getElementById("licenseInput").value;
+      WebTWAINService.license = license;
     }
   </script>
 </body>
