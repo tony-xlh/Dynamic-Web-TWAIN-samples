@@ -26,7 +26,12 @@
       <select id="scanners">
       </select>
     </label>
+    <label>
+      Doc ID:
+      <input type="text" id="docUid" value="" readonly/>
+    </label>
     <input type="button" value="Scan" onclick="StartScanning();" />
+    <input type="button" value="Download PDF" onclick="DownloadPDF();" />
     <span id="status"></span>
     <br/>
     <label>
@@ -46,8 +51,11 @@
   <script type="text/javascript">
     let scanners = [];
     let jobuid = "";
+    let docUid = "";
     WebTWAINService.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTAwMjI3NzYzLVRYbFFjbTlxIiwibWFpblNlcnZlclVSTCI6Imh0dHBzOi8vbWx0cy5keW5hbXNvZnQuY29tIiwib3JnYW5pemF0aW9uSUQiOiIxMDAyMjc3NjMiLCJzdGFuZGJ5U2VydmVyVVJMIjoiaHR0cHM6Ly9zbHRzLmR5bmFtc29mdC5jb20iLCJjaGVja0NvZGUiOjE4OTc4MDUzNDV9";
     listScanners();
+    createDocument();
+
     async function listScanners(){
       updateStatus("Listing scanners...");
       scanners = await WebTWAINService.listScanners();
@@ -63,6 +71,11 @@
       updateStatus("");
     }
 
+    async function createDocument(){
+      docUid = await WebTWAINService.createDocument();
+      document.getElementById("docUid").value = docUid;
+    }
+
     async function StartScanning() { 
       updateStatus("Scanning...");
       try {
@@ -73,6 +86,29 @@
         updateStatus(error);
       }
     }
+
+    async function DownloadPDF(){
+      updateStatus("Saving...");
+      try {
+        let blob = await WebTWAINService.saveDocument(docUid);
+        downloadBlob(blob);  
+        updateStatus("Done");  
+      } catch (error) {
+        updateStatus(error);
+      }
+    }
+
+    function downloadBlob(blob){
+      let url = URL.createObjectURL(blob);
+      let a = document.createElement('a');
+      a.href = url;
+      a.download = 'document.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
 
     async function CreateScanJob(){
       jobuid = "";
@@ -85,19 +121,19 @@
     }
 
     async function AcquireImages(){
-      let imgBlob = await WebTWAINService.nextPage(jobuid);
-      while (imgBlob) {
-        console.log("Image acquired successfully.");
-        AppendImage(imgBlob);
-        imgBlob = await WebTWAINService.nextPage(jobuid);
+      let imgInfo = await WebTWAINService.nextPageInfo(jobuid);
+      while (imgInfo) {
+        console.log("Image info acquired successfully.");
+        await AppendImage(imgInfo);
+        imgInfo = await WebTWAINService.nextPageInfo(jobuid);
       }
     }
 
-    function AppendImage(blob){
-      let url = URL.createObjectURL(blob);
+    async function AppendImage(info){
       let img = document.createElement("img");
-      img.src = url;
+      img.src = info.url;
       document.getElementById("scannedImages").appendChild(img);
+      await WebTWAINService.insertPage(docUid,img.src);
     }
 
     function updateStatus(info){
