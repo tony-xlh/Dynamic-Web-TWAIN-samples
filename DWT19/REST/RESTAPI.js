@@ -1,5 +1,5 @@
 const WebTWAINService = {
-  endPoint: "http://127.0.0.1:18622",
+  endPoint: "https://127.0.0.1:18623",
   license: "",
   listScanners: async function() {
     let requestOptions = {
