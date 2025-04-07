@@ -34,7 +34,12 @@ const WebTWAINService = {
       jobuid = object.jobuid;
       return jobuid;
     }
-    throw new Error("Failed to create scan job: " + response.status);
+    let errorMessage = "";
+    try {
+      let object = await response.json();
+      errorMessage = object.message;
+    } catch (error) {}
+    throw new Error("Failed to create scan job: " + response.status + errorMessage ?? "");
   },
   nextPage: async function (){
     var requestOptions = {
@@ -103,4 +108,21 @@ const WebTWAINService = {
     let response = await fetch(this.endPoint+"/api/storage/documents/"+documentUid+"/content", requestOptions)
     return await response.blob();
   },
+  process: async function(operation,imageurl) {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("X-DICS-LICENSE-KEY", this.license);
+    var raw = JSON.stringify({
+      "source": imageurl,
+    });
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+    let response = await fetch(this.endPoint+"/api/process/"+operation, requestOptions)
+    let object = await response.json();
+    return object;
+  }
 }

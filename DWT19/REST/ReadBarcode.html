@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Scan to PDF REST API Example</title>
+  <title>Barcode Reading REST API Example</title>
   <script src="RESTAPI.js"></script>
   <style>
     #config {
@@ -26,12 +26,7 @@
       <select id="scanners">
       </select>
     </label>
-    <label>
-      Doc ID:
-      <input type="text" id="docUid" value="" readonly/>
-    </label>
-    <input type="button" value="Scan" onclick="StartScanning();" />
-    <input type="button" value="Download PDF" onclick="DownloadPDF();" />
+    <input type="button" value="Scan" onclick="ScanAndReadBarcodes();" />
     <span id="status"></span>
     <br/>
     <label>
@@ -47,6 +42,7 @@
       </textarea>
     </label>
     <div id="scannedImages"></div>
+    <pre id="barcodeResults"></pre>
   </div>
   <script type="text/javascript">
     let scanners = [];
@@ -54,7 +50,6 @@
     let docUid = "";
     WebTWAINService.license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTAwMjI3NzYzLVRYbFFjbTlxIiwibWFpblNlcnZlclVSTCI6Imh0dHBzOi8vbWx0cy5keW5hbXNvZnQuY29tIiwib3JnYW5pemF0aW9uSUQiOiIxMDAyMjc3NjMiLCJzdGFuZGJ5U2VydmVyVVJMIjoiaHR0cHM6Ly9zbHRzLmR5bmFtc29mdC5jb20iLCJjaGVja0NvZGUiOjE4OTc4MDUzNDV9";
     listScanners();
-    createDocument();
 
     async function listScanners(){
       updateStatus("Listing scanners...");
@@ -71,44 +66,17 @@
       updateStatus("");
     }
 
-    async function createDocument(){
-      docUid = await WebTWAINService.createDocument();
-      document.getElementById("docUid").value = docUid;
-    }
 
-    async function StartScanning() { 
+    async function ScanAndReadBarcodes() { 
       updateStatus("Scanning...");
       try {
         await CreateScanJob();
-        await AcquireImages();
+        await ReadBarcodesInImages();
         updateStatus("Done");  
       } catch (error) {
         updateStatus(error);
       }
     }
-
-    async function DownloadPDF(){
-      updateStatus("Saving...");
-      try {
-        let blob = await WebTWAINService.saveDocument(docUid);
-        downloadBlob(blob);  
-        updateStatus("Done");  
-      } catch (error) {
-        updateStatus(error);
-      }
-    }
-
-    function downloadBlob(blob){
-      let url = URL.createObjectURL(blob);
-      let a = document.createElement('a');
-      a.href = url;
-      a.download = 'document.pdf';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
 
     async function CreateScanJob(){
       jobuid = "";
@@ -120,20 +88,21 @@
       jobuid = await WebTWAINService.CreateScanJob(selectedScanner.device,config);
     }
 
-    async function AcquireImages(){
+    async function ReadBarcodesInImages(){
       let imgInfo = await WebTWAINService.nextPageInfo(jobuid);
       while (imgInfo) {
         console.log("Image info acquired successfully.");
-        await AppendImage(imgInfo);
+        await AppendImageAndReadBarcodes(imgInfo);
         imgInfo = await WebTWAINService.nextPageInfo(jobuid);
       }
     }
 
-    async function AppendImage(info){
+    async function AppendImageAndReadBarcodes(info){
       let img = document.createElement("img");
       img.src = info.url;
       document.getElementById("scannedImages").appendChild(img);
-      await WebTWAINService.insertPage(docUid,img.src);
+      let barcodeResults = await WebTWAINService.process("read-barcode",img.src);
+      document.getElementById("barcodeResults").innerHTML += JSON.stringify(barcodeResults, null, 2) + "\n";
     }
 
     function updateStatus(info){
