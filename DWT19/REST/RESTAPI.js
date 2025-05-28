@@ -12,7 +12,7 @@ const WebTWAINService = {
   },
   CreateScanJob: async function(device,config){
     let myHeaders = new Headers();
-    myHeaders.append("X-DICS-LICENSE-KEY", this.license);
+    myHeaders.append("DWT-PRODUCT-KEY", this.license);
     myHeaders.append("Content-Type", "application/json");
     var raw = JSON.stringify({
       "autoRun": true,
@@ -111,7 +111,7 @@ const WebTWAINService = {
   process: async function(operation,imageurl) {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("X-DICS-LICENSE-KEY", this.license);
+    myHeaders.append("DWT-PRODUCT-KEY", this.license);
     var raw = JSON.stringify({
       "source": imageurl,
     });
