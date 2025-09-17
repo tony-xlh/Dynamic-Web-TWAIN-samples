@@ -2,7 +2,7 @@
 <head>
   <title>Hello World</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
-  <script src="https://cdn.jsdelivr.net/npm/dwt@18.5.0/dist/dynamsoft.webtwain.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dwt@latest/dist/dynamsoft.webtwain.min.js"></script>
   <style>
     #dwtcontrolContainer {
       position: absolute;
@@ -22,8 +22,8 @@
     function init(){
       Dynamsoft.DWT.ProductKey = "t01888AUAAB8bqKDC4hMnmd5+onvwpQdB+bHDW8JX0iZ8LCDxalKejZI86WLuuu1oAD/FDcsdqgqKE5861S24+HI53wzZNb5+OdXAafWdhvpONnDqlhPo52FadjvM86YJGoHXDNh2HDaAJbDUcgDeca2NHiAPMAcwrwZ6wOUqzj9fOAak/PrPhk5ONXBafWcZkDpONnDqljMH5JmRIa92WALC8uTsAHmAXQJcL7JTQHAE5AF2AqRkHUL4ApE1Kpw=";
       Dynamsoft.DWT.AutoLoad = false;
-      Dynamsoft.DWT.ServiceInstallerLocation = "https://demo.dynamsoft.com/DWT/Resources/dist/";
-      Dynamsoft.DWT.ResourcesPath = "https://cdn.jsdelivr.net/npm/dwt@18.5.0/dist";
+      Dynamsoft.DWT.ServiceInstallerLocation = "https://unpkg.com/dwt@latest/dist/dist/";
+      Dynamsoft.DWT.ResourcesPath = "https://cdn.jsdelivr.net/npm/dwt@latest/dist";
       Dynamsoft.DWT.Containers = [{ ContainerId: 'dwtcontrolContainer',Width: 270, Height: 350 }];
       Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function () {
         DWObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
@@ -82,4 +82,5 @@
     }
   </script>
 </body>
+
 </html>
