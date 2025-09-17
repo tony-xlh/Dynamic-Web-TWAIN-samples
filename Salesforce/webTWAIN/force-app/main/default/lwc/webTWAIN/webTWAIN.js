@@ -68,7 +68,7 @@ export default class WebTWAIN extends LightningElement {
         try{
             let me = this;
             Dynamsoft.DWT.ResourcesPath = dwt;
-            Dynamsoft.DWT.ServiceInstallerLocation = "https://demo.dynamsoft.com/DWT/Resources/dist/";
+            Dynamsoft.DWT.ServiceInstallerLocation = "https://unpkg.com/dwt@18.5.1/dist/dist/";
             //request your trial license here: https://www.dynamsoft.com/customer/license/trialLicense/?product=dwt
             Dynamsoft.DWT.ProductKey = "t01908AUAAJ5Bl8Z4B4dVB1cTLDTcaFDf8vRl/3kmHuhVOoPrJbLdXy1uMDVAFDVHRCDxV7iyFsROWUYU950cJKo6NnOXHav2+uVkB6e2d6q0d6KDk4+cImMexnLaLu9bN3AB3hnQ/TrsAGqg1HICPsNWGyyAFqAGoFYNsIDbt7h+fMo5IPXqPwe6OtnBqe2ddUDaONHByUfOFBAfxU1pdSoBQX1zDgAtQG8BbD+yS0DkDNAC9AK4MQTngp8BjmEsSg==";
             const container = me.template.querySelector('div.dwtContainer');
