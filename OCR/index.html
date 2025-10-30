@@ -65,12 +65,27 @@
   
   <script type="text/javascript">
     var DWTObject;
+    var storedOCRResults = {};
     Dynamsoft.DWT.RegisterEvent("OnWebTwainReady", function () {
       DWTObject = Dynamsoft.DWT.GetWebTwain("dwtcontrolContainer");
       DWTObject.Viewer.width = "100%";
       DWTObject.Viewer.height = "100%";
       CheckIsOCRInstalled();
+      DWTObject.RegisterEvent('OnBufferChanged',
+        function (bufferChangeInfo) {
+          console.log('Buffer changed: ', bufferChangeInfo);
+          if (DWTObject.CurrentImageIndexInBuffer != -1) {
+            let imageID = DWTObject.IndexToImageID(DWTObject.CurrentImageIndexInBuffer);
+            if (imageID in storedOCRResults) {
+              PrintPrettyResult(storedOCRResults[imageID]);
+            } else {
+              document.getElementById("result").innerText = "";
+            }
+          }
+        }
+      )
     });
+
 
     function AcquireImage() {
       if (DWTObject) {
@@ -145,6 +160,7 @@
     async function RecognizeOnePage(index){
       let result = await DWTObject.Addon.OCRKit.Recognize(index);
       console.log(result);
+      storedOCRResults[result.imageID] = result;
       PrintPrettyResult(result);
     }
 
