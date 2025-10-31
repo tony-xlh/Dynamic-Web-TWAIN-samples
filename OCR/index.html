@@ -40,6 +40,17 @@
     <input type="button" value="Correct Orientation" onclick="CorrectOrientation();" />
     <input type="button" value="Recognize Text" onclick="Recognize();" />
     <label>
+      Language:
+      <select id="language">
+        <option value="en">English</option>
+        <option value="fr">French</option>
+        <option value="es">Spanish</option>
+        <option value="de">German</option>
+        <option value="it">Italian</option>
+        <option value="pt">Portuguese</option>
+      </select>
+    </label>
+    <label>
       Target:
       <select id="processingTarget">
         <option value="current">Current Image</option>
@@ -158,7 +169,8 @@
     }
 
     async function RecognizeOnePage(index){
-      let result = await DWTObject.Addon.OCRKit.Recognize(index);
+      let language = document.getElementById("language").value;
+      let result = await DWTObject.Addon.OCRKit.Recognize(index,{settings:{language:language}});
       console.log(result);
       storedOCRResults[result.imageID] = result;
       PrintPrettyResult(result);
