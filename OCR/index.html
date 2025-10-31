@@ -133,10 +133,10 @@
     }
 
     async function CorrectOrientationForOne(index){
-      let result = await DWTObject.Addon.OCRKit.DetectPageOrientation(DWTObject.CurrentImageIndexInBuffer);
+      let result = await DWTObject.Addon.OCRKit.DetectPageOrientation(index);
       console.log(result);
       if (result.angle != 0) {
-        DWTObject.Rotate(DWTObject.CurrentImageIndexInBuffer,result.angle,true);
+        DWTObject.Rotate(index,result.angle,true);
       }
     }
 
@@ -181,7 +181,7 @@
     async function CheckIsOCRInstalled(){
       try {
         let info = await DWTObject.Addon.OCRKit.GetInstalledOCRInfo();
-        console.log(info);  
+        console.log(info);
         if (info.version) {
           return true;
         }
