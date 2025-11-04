@@ -35,6 +35,7 @@ export default class WebTWAINiframe extends LightningElement {
     this.template.querySelector("div.viewer").appendChild(this.dwtFrame);
     // provide height and width to it
     this.dwtFrame.setAttribute("style","height:100%;width:100%;");
+    this.dwtFrame.setAttribute("allow","local-network-access *");
   }
   scan(){
     this.dwtFrame.contentWindow.postMessage("acquire");
