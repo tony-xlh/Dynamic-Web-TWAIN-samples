@@ -16,7 +16,7 @@ Since Salesforce has many restrictions, it is recommended to use the iframe appr
 Basic steps for using it:
 
 1. Write a document scanning page and put it under `staticresources`.
-2. Embed the page in LWC via iframe.
+2. Embed the page in LWC via iframe. Since Chrome 142 with the new local network access permission restriction, we need to set its `allow` attribute to `local-network-access *`.
 3. We can control the scanning page and get the scanning results via `postMessage`.
 
 
