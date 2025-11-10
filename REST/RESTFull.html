@@ -24,16 +24,17 @@
         width: 150px;
         height: 150px;
         margin: 5px;
-        border: 1px solid gray; /* 默认边框颜色 */
+        border: 1px solid gray;
         cursor: pointer;
     }
     .selected {
-        border-color: red !important; /* 选中的边框颜色 */
+        border-color: red !important;
     }
 </style></head>
 
 <body>
-    Select Scanner: <select id="sources"> <option>Canon DR-M160 TWAIN</option><option>KODAK Scanner: i2000</option><option>TWAIN2 FreeImage Software Scanner</option><option>EPSON TM-S1000 TWAIN2.0 </option><option>Virtual Scanner</option><option>VueScan TWAIN</option><option>TWAIN64-VueScan TWAIN</option><option>TWAIN64-Canon DR-M160 TWAIN</option><option>TWAIN64-KODAK Scanner: i2000</option><option>WIA-HPBCF77F (HP LaserJet Pro M329)</option></select> <br>   
+    <input type="button" value="Init" onclick="init();">
+    Select Scanner: <select id="sources"> </select> <br>   
     <input type="button" value="Scan" onclick="acquire();">
     <input type="button" value="Load" onclick="load();">
     <div id="container" style="width: 380px; height: 380px; border: 1px solid rgb(204, 204, 204); background: rgb(255, 255, 255);overflow: auto;"></div>
@@ -225,10 +226,9 @@
         setSelectImage(img, true);
         
     
-        // 添加点击事件，切换边框颜色
+
         img.addEventListener('click', () => {
             /*const images = document.querySelectorAll('#container img');
-            // 找到当前点击图片的索引
             curDcumentUid = Array.from(images).indexOf(img);
         
             images.forEach(i => i.classList.remove('selected'));
@@ -257,7 +257,7 @@
         let url = `${restServer}/api/storage/documents/${curDcumentUid}/pages`; 
         if(bScan) {
             let documentParams = {
-                //insertPos: 0, // 请求体中的插入位置
+                //insertPos: 0, 
                 source: data,
             };
             
@@ -280,9 +280,9 @@
     function load(){
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = "image/*"; // 只允许选择图片
+        input.accept = "image/*"; 
         input.multiple = true; 
-        input.style.display = "none"; // 隐藏 input
+        input.style.display = "none"; 
         document.body.appendChild(input);
 
         input.addEventListener("change", (event) => {
@@ -294,20 +294,20 @@
                     addToDocument(file);
                 }
             }
-            document.body.removeChild(input); // 选择完成后移除 input
+            document.body.removeChild(input); 
         });
 
-        input.click(); // 触发文件选择对话框
+        input.click(); 
     }
     
     function displayImage(file) {
         const reader = new FileReader();
         reader.onload = function(event) {
-            const imageUrl = event.target.result; // 获取图片的 base64 URL
+            const imageUrl = event.target.result; 
             showImage(imageUrl);
         };
 
-        reader.readAsDataURL(file); // 读取文件并转换为 Data URL
+        reader.readAsDataURL(file); 
     }
     
     async function IsBlankImage(){
@@ -411,49 +411,20 @@
             const url = window.URL.createObjectURL(blob);
               const a = document.createElement('a');
               a.href = url;
-              a.download = 'document.pdf'; // 设置下载文件名称
-              //document.body.appendChild(a); // 将链接添加到文档中
-              a.click(); // 触发下载
-              //a.remove(); // 下载后移除链接
-              window.URL.revokeObjectURL(url); // 释放 URL 对象
+              a.download = 'document.pdf'; 
+              //document.body.appendChild(a); 
+              a.click(); 
+              //a.remove(); 
+              window.URL.revokeObjectURL(url); 
         } else {
             let responseText = await response.text();
             console.log(responseText);
             const jsonString =  JSON.parse(responseText);
             alert(jsonString.message);
         }
-        
-        /*
-        const container = document.getElementById('container');
-        const images = container.getElementsByTagName('img');
-        const secondImageUrl = images[currentIndex].src; // 索引从 0 开始，1 表示第二个元素
-        console.log(secondImageUrl);
-        fetchAndSaveImage(secondImageUrl, 'downloaded_image.png');*/
+
     }
 
-    /*function fetchAndSaveImage(imageUrl, fileName) {
-      fetch(imageUrl)
-        .then(response => {
-          // 确保响应成功
-          if (!response.ok) {
-            throw new Error('Failed to fetch image');
-          }
-          return response.blob(); // 获取图片的 Blob 数据
-        })
-        .then(blob => {
-          // 创建下载链接
-          const link = document.createElement('a');
-          const url = URL.createObjectURL(blob); // 创建一个临时 URL
-          link.href = url;
-          link.download = fileName; // 设置文件名
-          link.click(); // 模拟点击链接下载文件
-          URL.revokeObjectURL(url); // 下载完后释放资源
-        })
-        .catch(error => {
-          console.error('Error:', error); // 捕获错误
-        });
-    }*/
-    
     async function removeCurrentPage(){
         const pageId = await getPageId(currentIndex); 
         if (pageId) {
@@ -503,10 +474,11 @@
             await createDocument();
         }
     }
-    document.addEventListener("DOMContentLoaded",function(){
+    
+    function init(){
         getSources();
         createDocument();
-    })
+    }
 </script>
 
 </body></html>
