@@ -62,7 +62,7 @@
     <div>Output:</div>
     <input type="button" value="Save as PDF" onclick="SaveAsPDF();" />
     <label>Option:
-      <select>
+      <select id="outputFormat">
         <option value="extralayer">With Extra Text Layer</option>
         <option value="plaintext">Plain Text</option>
       </select>
@@ -77,6 +77,7 @@
   <script type="text/javascript">
     var DWTObject;
     var storedOCRResults = {};
+
     Dynamsoft.DWT.RegisterEvent("OnWebTwainReady", function () {
       DWTObject = Dynamsoft.DWT.GetWebTwain("dwtcontrolContainer");
       DWTObject.Viewer.width = "100%";
@@ -207,7 +208,7 @@
 
     async function SaveAsPDF(){
       try {
-        let format = document.querySelector('select').value;
+        let format = document.getElementById('outputFormat').value;
         if(format === "extralayer"){
           await DWTObject.Addon.OCRKit.SaveToPath(DWTObject.SelectAllImages(),Dynamsoft.DWT.EnumDWT_OCRKitOutputFormat.PDF_WITH_EXTRA_TEXTLAYER);
         }else{
