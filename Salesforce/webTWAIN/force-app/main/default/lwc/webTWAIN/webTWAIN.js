@@ -113,7 +113,7 @@ export default class WebTWAIN extends LightningElement {
                 await this.DWTObject.SelectDeviceAsync(this.devices[this.curScannerIndex]);
             }
             // await this.DWTObject.SelectSourceAsync(); // not support, ui has some problems
-            await this.DWTObject.AcquireImageAsync({Resolution: 200, PixelType: 2, ShowUI: true});
+            await this.DWTObject.AcquireImageAsync({Resolution: 200, PixelType: 2, IfShowUI: true});
         }catch(error) {
             this.showMessage('acquiring', error.message);
         }
