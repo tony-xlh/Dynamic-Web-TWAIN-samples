@@ -28,11 +28,11 @@
     />
     <script type="text/javascript">
       let DWTObject;
-      let license = window.prompt("Please input the license. The default value is a one-day license.","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
       LoadDWTByVersion();
 
       async function LoadDWTByVersion(){
         let version = await GetServiceVersion();
+        let license = window.prompt("Please input the license for version " + version + ". The default value is a one-day license.","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
         await loadLibrary("https://cdn.jsdelivr.net/npm/dwt@" + version + "/dist/dynamsoft.webtwain.min.js", "text/javascript");
         let DWT;
         if (Dynamsoft.WebTwainEnv) {
