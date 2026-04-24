@@ -28,6 +28,7 @@
     />
     <script type="text/javascript">
       let DWTObject;
+      let license = window.prompt("Please input the license. The default value is a one-day license.","DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
       LoadDWTByVersion();
 
       async function LoadDWTByVersion(){
@@ -42,7 +43,7 @@
         DWT.AutoLoad = false;
         DWT.IfCheckCssFiles = false;
         DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: '380px', Height: '400px' }];
-        DWT.ProductKey = 'DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9';
+        DWT.ProductKey = license;
         DWT.ResourcesPath = "https://cdn.jsdelivr.net/npm/dwt@" + version + "/dist";
         DWT.Load();
         DWT.RegisterEvent("OnWebTwainReady", function () {
