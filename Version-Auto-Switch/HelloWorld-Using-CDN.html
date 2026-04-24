@@ -45,6 +45,9 @@
         DWT.Containers = [{ ContainerId: 'dwtcontrolContainer', Width: '380px', Height: '400px' }];
         DWT.ProductKey = license;
         DWT.ResourcesPath = "https://cdn.jsdelivr.net/npm/dwt@" + version + "/dist";
+        if (version == "latest") {
+          Dynamsoft.DWT.ServiceInstallerLocation = 'https://unpkg.com/dwt@latest/dist/dist/';
+        }
         DWT.Load();
         DWT.RegisterEvent("OnWebTwainReady", function () {
           DWTObject = DWT.GetWebTwain("dwtcontrolContainer");
