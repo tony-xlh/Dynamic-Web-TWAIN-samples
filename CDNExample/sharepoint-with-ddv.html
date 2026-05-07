@@ -200,6 +200,19 @@
 
       // ── DDV ──────────────────────────────────────────────
 
+      function filterElements(config, elementsToHide) {
+        if (config.children && Array.isArray(config.children)) {
+          config.children = config.children.filter(function (child) {
+            return elementsToHide.indexOf(child) === -1;
+          });
+          config.children.forEach(function (child) {
+            if (typeof child === 'object') {
+              filterElements(child, elementsToHide);
+            }
+          });
+        }
+      }
+
       async function initDDV() {
         try {
           // Public trial license valid for 24 hours.
@@ -209,9 +222,29 @@
           Dynamsoft.DDV.Core.loadWasm();
           await Dynamsoft.DDV.Core.init();
 
+          // Get default UI config and hide unwanted elements
+          var uiConfig = Dynamsoft.DDV.getDefaultUiConfig("editViewer");
+          var elementsToHide = [
+            Dynamsoft.DDV.Elements.Print,
+            Dynamsoft.DDV.Elements.ThumbnailSwitch,
+            Dynamsoft.DDV.Elements.Pagination,
+            Dynamsoft.DDV.Elements.DisplayMode,
+            Dynamsoft.DDV.Elements.DeleteCurrent,
+            Dynamsoft.DDV.Elements.DeleteAll,
+            Dynamsoft.DDV.Elements.Load,
+            Dynamsoft.DDV.Elements.Download,
+            Dynamsoft.DDV.Elements.TextSearchPanelSwitch,
+            Dynamsoft.DDV.Elements.TextSearchPanel,
+            Dynamsoft.DDV.Elements.RedactionSet,
+            Dynamsoft.DDV.Elements.RedactionMode,
+            Dynamsoft.DDV.Elements.RedactPages,
+            Dynamsoft.DDV.Elements.RedactionApply,
+          ];
+          filterElements(uiConfig, elementsToHide);
+
           editViewer = new Dynamsoft.DDV.EditViewer({
             container: "ddvContainer",
-            uiConfig: Dynamsoft.DDV.getDefaultUiConfig("editViewer"),
+            uiConfig: uiConfig,
           });
 
           ddvReady = true;
