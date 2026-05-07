@@ -244,7 +244,13 @@
 
               // Create document and load PDF
               ddvDoc = Dynamsoft.DDV.documentManager.createDocument({ name: "edit-page" });
-              await ddvDoc.loadSource([{ fileData: pdfBlob }]);
+              await ddvDoc.loadSource([{
+                fileData: pdfBlob,
+                convertMode: Dynamsoft.DDV.EnumConvertMode.CM_RENDERALL,
+                renderOptions: {
+                  renderAnnotations: Dynamsoft.DDV.EnumAnnotationRenderMode.LOAD_ANNOTATIONS
+                }
+              }]);
               editViewer.openDocument(ddvDoc);
 
               setStatus('Editing page ' + (editingPageIndex + 1) + '. Make changes and click "Save Back to Scanner".');
@@ -279,6 +285,7 @@
           // Enable PDF annotation rendering when rasterizing
           DWTObject.Addon.PDF.SetReaderOptions({
             convertMode: Dynamsoft.DWT.EnumDWT_ConvertMode.CM_RENDERALL,
+            preserveUnmodifiedOnSave: true,
             renderOptions: {
               renderAnnotations: true,
             },
