@@ -6,3 +6,10 @@ If no service is installed, it will use the latest version.
 
 [Online demo](https://tony-xlh.github.io/Dynamic-Web-TWAIN-samples/Version-Auto-Switch/HelloWorld-Using-CDN.html)
 
+
+To make the testing convenient, you can install different versions of service, copy the files, stop the service and the run it with command:
+
+```
+.\DynamsoftService.exe -asconsole -asagent
+```
+
