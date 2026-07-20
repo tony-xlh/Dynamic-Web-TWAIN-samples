@@ -158,6 +158,94 @@
     .empty-state p {
       font-size: 16px;
     }
+
+    .outputinfo-section {
+      margin-top: 24px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .outputinfo-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafafa;
+    }
+
+    .outputinfo-header span {
+      font-size: 14px;
+      font-weight: 500;
+      color: #6b7280;
+    }
+
+    .outputinfo-content {
+      padding: 16px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .outputinfo-content pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin: 0;
+    }
+
+    .outputinfo-item {
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 12px;
+    }
+
+    .outputinfo-item:last-child {
+      margin-bottom: 0;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .outputinfo-item .page-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #2563eb;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .outputinfo-item pre {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin: 0;
+    }
+
+    .expand-toggle {
+      font-size: 12px;
+      color: #2563eb;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .expand-toggle:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -179,6 +267,14 @@
       <div id="dwtcontrolContainer"></div>
     </div>
     <div class="status-bar" id="status-bar">Ready — click <strong>Scan</strong> to start scanning, or <strong>Load File</strong> to open an image.</div>
+
+    <div class="outputinfo-section" id="outputinfo-section" style="display: none;">
+      <div class="outputinfo-header">
+        <span>📋 OutputInfo (JSON)</span>
+        <span class="expand-toggle" id="collapse-all-btn" onclick="toggleAllOutputInfo()">Collapse All</span>
+      </div>
+      <div class="outputinfo-content" id="outputinfo-content"></div>
+    </div>
   </div>
 
   <script>
@@ -194,6 +290,7 @@
     Dynamsoft.DWT.Load();
 
     var DWTObject;
+    var outputInfoList = [];
 
     Dynamsoft.DWT.RegisterEvent("OnWebTwainReady", function () {
       DWTObject = Dynamsoft.DWT.GetWebTwain("dwtcontrolContainer");
@@ -207,8 +304,14 @@
       // Log outputInfo after each image is transferred from the scanner
       DWTObject.RegisterEvent("OnPostTransferAsync", function (outputInfo) {
         console.log("OnPostTransfer outputInfo:", outputInfo);
+        // Clone to avoid reference issues — store a plain object
+        var clonedInfo = JSON.parse(JSON.stringify(outputInfo));
+        clonedInfo._index = outputInfoList.length + 1;
+        clonedInfo._timestamp = new Date().toISOString();
+        outputInfoList.push(clonedInfo);
+        renderOutputInfo();
         setStatus(
-          "📥 Transferred — ImageId: " + outputInfo.ImageId +
+          "📥 Transferred page " + clonedInfo._index + " — ImageId: " + outputInfo.ImageId +
           ", Path: " + outputInfo.Path +
           ", Width: " + outputInfo.Width +
           ", Height: " + outputInfo.Height +
@@ -294,9 +397,60 @@
     function clearBuffer() {
       if (!DWTObject) return;
       DWTObject.RemoveAllImages();
+      outputInfoList = [];
+      renderOutputInfo();
       setStatus("🗑️ Buffer cleared.");
       updatePageInfo();
       updateClearButton();
+    }
+
+    function renderOutputInfo() {
+      var section = document.getElementById("outputinfo-section");
+      var content = document.getElementById("outputinfo-content");
+      var count = outputInfoList.length;
+
+      if (count === 0) {
+        section.style.display = "none";
+        content.innerHTML = "";
+        return;
+      }
+
+      section.style.display = "block";
+
+      var html = "";
+      for (var i = 0; i < count; i++) {
+        var info = outputInfoList[i];
+        var jsonStr = JSON.stringify(info, null, 2);
+        html += '<div class="outputinfo-item">';
+        html += '<div class="page-label">📄 Page ' + info._index + ' (ImageId: ' + info.ImageId + ', ' + info._timestamp + ')</div>';
+        html += '<pre>' + escapeHtml(jsonStr) + '</pre>';
+        html += '</div>';
+      }
+      content.innerHTML = html;
+    }
+
+    function toggleAllOutputInfo() {
+      var content = document.getElementById("outputinfo-content");
+      var btn = document.getElementById("collapse-all-btn");
+      var items = content.querySelectorAll(".outputinfo-item pre");
+      if (!items.length) return;
+
+      // Check if currently all collapsed — if first one is hidden, expand all; else collapse all
+      var firstHidden = items[0].style.display === "none";
+
+      for (var i = 0; i < items.length; i++) {
+        items[i].style.display = firstHidden ? "block" : "none";
+      }
+      btn.textContent = firstHidden ? "Collapse All" : "Expand All";
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
   </script>
 </body>
