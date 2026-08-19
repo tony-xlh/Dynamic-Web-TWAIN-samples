@@ -8,6 +8,8 @@
 
 Yes. script-src and style-src without unsafe-inline is supported for the basic scanning flow. Although the inline script in the installation dialog is blocked, the user can still download the service installer.
 
+See the sample in the attachment.
+
 > 2. Inline behavior dependency
 >- If we remove/replace the default install dialog, does that eliminate all unsafe-inline requirements, or only install-dialog-related requirements?
 >- Please identify any remaining components that still require inline styles or inline event handlers.
@@ -43,3 +45,8 @@ Endpoints: 127.0.0.1, localhost
 
 Yes.
 
+See the demo in the attachment.
+
+Attachment:
+
+https://dynamsoft.sharepoint.com/sites/DynamsoftEnglishOnly/Shared%20Documents/PT-DWT,%20DDV/Samples/CSP-sample.zip?d=wede75c359d2a47ddb421ac5d1145054d&csf=1&web=1&e=al11ec
