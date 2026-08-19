@@ -4,17 +4,15 @@
       http-equiv="Content-Security-Policy"
       content="
         default-src 'none';
-        script-src 'self' blob: https://cdn.jsdelivr.net;
-        style-src 'self' https://cdn.jsdelivr.net;
+        script-src 'self';
+        style-src 'self';
         img-src 'self' data: blob:
-          http://localhost:* https://localhost:*
-          http://127.0.0.1:* https://127.0.0.1:*;
+          http://127.0.0.1:18622 https://127.0.0.1:18623;
         font-src 'self' data:;
         connect-src 'self' blob:
           https://www.dynamsoft.com https://demo.dynamsoft.com
           https://mlds.dynamsoft.com https://sdls.dynamsoft.com
-          http://localhost:* https://localhost:* ws://localhost:* wss://localhost:*
-          http://127.0.0.1:* https://127.0.0.1:* ws://127.0.0.1:* wss://127.0.0.1:*;
+          http://127.0.0.1:18622 https://127.0.0.1:18623 ws://127.0.0.1:18622 wss://127.0.0.1:18623;
         worker-src 'self' blob:;
         frame-src 'self' blob:;
         object-src 'none';
@@ -22,7 +20,9 @@
         form-action 'self';
       "
     />
-    <script src="https://cdn.jsdelivr.net/npm/dwt/dist/dynamsoft.webtwain.min.js"></script>
+    <script src="Resources/dynamsoft.webtwain.initiate.js"></script>
+    <script src="Resources/dynamsoft.webtwain.config.js"></script>
+    <!--<script src="https://cdn.jsdelivr.net/npm/dwt/dist/dynamsoft.webtwain.min.js"></script>-->
   </head>
 
   <body>

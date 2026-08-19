@@ -13,10 +13,6 @@ Dynamsoft.DWT.Containers = [
 ];
 Dynamsoft.DWT.ProductKey =
   "t0198EQYAAIYXHFdgmU599tVMHnppKEWmT9YGpNtsUorHyqzluwSVBVcH4IO9/TnJQKE9ls8IplUDjhWJmyMLd8RDDO+YDM66c2KCU8Y7hcY7eYITj5xELn7adNoqzgsTcABrBOS8DifAJZDWUgGb/vbeGTIAPUA6gPTWwD2guQsffJTBC7/XmP53oC0nJjhlvLNMkDFOnuDEI6dPEGNJvf1u95QgXN6cDEAPkCbAv4fskiBUA+gB0gS2KouRAWQXhnHKfgAowDeC";
-Dynamsoft.DWT.ResourcesPath =
-  "https://cdn.jsdelivr.net/npm/dwt/dist";
-Dynamsoft.DWT.ServiceInstallerLocation =
-  "https://unpkg.com/dwt/dist/dist/";
 Dynamsoft.DWT.Load();
 
 var DWTObject;
