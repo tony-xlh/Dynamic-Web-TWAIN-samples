@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/dwt/dist/dynamsoft.webtwain.min.js"></script>
+  </head>
+
+  <body>
+    <button onclick="AcquireImage();">Scan</button>
+    <button onclick="upload();">Upload</button>
+    <button onclick="binarizeImage();">Convert to BW</button>
+    <button onclick="rotateCW();">Rotate Clockwise</button>
+    <button onclick="rotateCCW();">Rotate Counter-Clockwise</button>
+    <div id="dwtcontrolContainer"></div>
+
+    <script>
+      Dynamsoft.DWT.AutoLoad = false;
+      Dynamsoft.DWT.IfCheckCssFiles = false;
+      Dynamsoft.DWT.Containers = [
+        { ContainerId: "dwtcontrolContainer", Width: "380px", Height: "400px" },
+      ];
+      Dynamsoft.DWT.ProductKey =
+        "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTEwNTI2NzQwMSIsIm1haW5TZXJ2ZXJVUkwiOiJodHRwczovL21kbHMuZHluYW1zb2Z0b25saW5lLmNvbS8iLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInN0YW5kYnlTZXJ2ZXJVUkwiOiJodHRwczovL3NkbHMuZHluYW1zb2Z0b25saW5lLmNvbS8iLCJjaGVja0NvZGUiOi0zMzE5NzM0NjJ9";
+      Dynamsoft.DWT.ResourcesPath =
+        "https://cdn.jsdelivr.net/npm/dwt/dist";
+      Dynamsoft.DWT.ServiceInstallerLocation =
+        "https://unpkg.com/dwt/dist/dist/";
+      Dynamsoft.DWT.Load();
+
+      var DWTObject;
+
+      Dynamsoft.DWT.RegisterEvent("OnWebTwainReady", function () {
+        DWTObject = Dynamsoft.DWT.GetWebTwain("dwtcontrolContainer");
+      });
+
+      function AcquireImage() {
+        if (DWTObject) {
+          DWTObject.SelectSourceAsync()
+            .then(function () {
+              return DWTObject.AcquireImageAsync({
+                IfCloseSourceAfterAcquire: true,
+                IfShowUI: false,
+                PixelType: Dynamsoft.DWT.EnumDWT_PixelType.TWPT_GRAY,
+                Resolution: 150,
+              });
+            })
+            .catch(function (exp) {
+              alert(exp.message);
+            });
+        }
+      }
+
+      function upload() {
+        if (DWTObject && DWTObject.HowManyImagesInBuffer > 0) {
+          var strUrl = "https://demo.dynamsoft.com/sample-uploads/";
+          var imgAry = [DWTObject.CurrentImageIndexInBuffer];
+          DWTObject.HTTPUpload(
+            strUrl,
+            imgAry,
+            Dynamsoft.DWT.EnumDWT_ImageType.IT_PNG,
+            Dynamsoft.DWT.EnumDWT_UploadDataFormat.Binary,
+            "WebTWAINImage.png",
+            function () {
+              alert("Upload successful");
+            },
+            function (errorCode, errorString, sHttpResponse) {
+              alert(sHttpResponse.length > 0 ? sHttpResponse : errorString);
+            }
+          );
+        } else {
+          alert("There is no image in buffer.");
+        }
+      }
+
+      function binarizeImage() {
+        DWTObject.ConvertToBW(DWTObject.CurrentImageIndexInBuffer);
+      }
+
+      function rotateCW() {
+        DWTObject.RotateRight(DWTObject.CurrentImageIndexInBuffer);
+      }
+
+      function rotateCCW() {
+        DWTObject.RotateLeft(DWTObject.CurrentImageIndexInBuffer);
+      }
+    </script>
+  </body>
+</html>
