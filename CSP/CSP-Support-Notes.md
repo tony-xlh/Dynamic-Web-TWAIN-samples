@@ -23,9 +23,10 @@ Yes.
 | Directive | Status | Why |
 |---|---|---|
 | `script-src 'self' https://cdn.jsdelivr.net` | **Required** | Loads DWT core + resource scripts from jsdelivr. Add a nonce/hash for your own app scripts — no `'unsafe-inline'`/`'unsafe-eval'`/`'wasm-unsafe-eval'` needed. |
+| `style-src 'self' https://cdn.jsdelivr.net` | **Required** | Load CSS files via CDN |
 | `img-src 'self' data: blob: http://127.0.0.1:* https://127.0.0.1:*` | **Required** | Service serves scanned images from `http://127.0.0.1:18622/…/img`; viewer uses `data:`/`blob:` URLs. |
 | `connect-src 'self' https://mlds.dynamsoft.com https://sdls.dynamsoft.com http://127.0.0.1:* https://127.0.0.1:* ws://127.0.0.1:* wss://127.0.0.1:*` | **Required** | License handshake (mlds/sdls, not required using offline license), service API (127.0.0.1), and WebSocket. Add your upload host if you use `HTTPUpload`. |
-| `style-src 'self' https://cdn.jsdelivr.net` | **Required** | Load CSS files via CDN |
+
 
 > 4. Local service endpoints
 > - Your note referenced localhost WebSocket ports (for example 18622/> 18623/18625/18626).
@@ -39,4 +40,6 @@ Endpoints: 127.0.0.1, localhost
 > - Planned support status (Yes/No)
 > - Target release timeline (quarter/year)
 > - Public issue or tracking reference we can monitor
+
+Yes.
 
