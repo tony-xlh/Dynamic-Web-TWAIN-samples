@@ -21,13 +21,27 @@ Yes.
 > - Mark each directive as Required or Optional and explain why each Required directive is needed.
 > - Please confirm whether any eval-like behavior requires unsafe-eval.
 
+Minimum policy for scan + image processing
 
 | Directive | Status | Why |
 |---|---|---|
-| `script-src 'self' https://cdn.jsdelivr.net` | **Required** | Loads DWT core + resource scripts from jsdelivr. Add a nonce/hash for your own app scripts — no `'unsafe-inline'`/`'unsafe-eval'`/`'wasm-unsafe-eval'` needed. |
-| `style-src 'self' https://cdn.jsdelivr.net` | **Required** | Load CSS files via CDN |
-| `img-src 'self' data: blob: http://127.0.0.1:* https://127.0.0.1:*` | **Required** | Service serves scanned images from `http://127.0.0.1:18622/…/img`; viewer uses `data:`/`blob:` URLs. |
-| `connect-src 'self' https://mlds.dynamsoft.com https://sdls.dynamsoft.com http://127.0.0.1:* https://127.0.0.1:* ws://127.0.0.1:* wss://127.0.0.1:*` | **Required** | License handshake (mlds/sdls, not required using offline license), service API (127.0.0.1), and WebSocket. Add your upload host if you use `HTTPUpload`. |
+| `default-src 'none'` | Recommended (base) | Deny everything not explicitly listed below. Softer alternative: `'self'`. |
+| `script-src 'self' https://cdn.jsdelivr.net` | **Required** | Loads the DWT core and the resource scripts it injects at runtime, all from jsdelivr. Your own inline/app scripts go through `'nonce-…'`/`'sha256-…'` — none of `'unsafe-inline'`, `'unsafe-eval'`, or `'wasm-unsafe-eval'` is required. Add `blob:` only if your flow creates scripts from blob URLs. |
+| `style-src 'self' https://cdn.jsdelivr.net` | **Required** | DWT loads its viewer CSS as external `<link rel="stylesheet">` from jsdelivr — no `'unsafe-inline'` needed. |
+| `img-src 'self' data: blob: http://127.0.0.1:* https://127.0.0.1:* http://localhost:* https://localhost:*` | **Required** | The local Service streams scanned images from `http://127.0.0.1:18622/…/img`; the viewer renders from `data:`/`blob:` URLs. |
+| `connect-src 'self' https://mlds.dynamsoft.com https://sdls.dynamsoft.com http://127.0.0.1:* https://127.0.0.1:* http://localhost:* https://localhost:* ws://127.0.0.1:* wss://127.0.0.1:* ws://localhost:* wss://localhost:*` | **Required** | License handshake (mlds/sdls — not needed with an offline license), the service API over HTTP(S) and WebSocket, plus the upload host you pass to `HTTPUpload` (e.g. `https://demo.dynamsoft.com`). |
+| `font-src 'self' data:` | Optional | The viewer embeds its icon font as an inline `data:` woff. Only needed when a viewer is created. |
+| `worker-src 'self' blob:` | Optional | Only if your flow spawns Web Workers from blob URLs. |
+| `frame-src 'self' blob:` | Optional | Only if you rely on the default in-page dialogs that render an iframe. |
+| `object-src 'none'` | Recommended | Baseline hardening; DWT does not use plugins/objects. |
+| `base-uri 'self'` | Recommended | Baseline hardening against base-tag injection. |
+| `form-action 'self'` | Recommended | Baseline hardening; DWT uploads use XHR, not forms. |
+
+You can remove https://cdn.jsdelivr.net from the rules if loading local resources.
+
+eval-like behavior
+
+unsafe-eval is not required. DWT contains no `eval()`, no `new Function`, and no `WebAssembly.compile`/`instantiate` — image processing runs in the local Web TWAIN Service, not in-browser WASM. `'wasm-unsafe-eval'` is unnecessary for the core scan flow.
 
 
 > 4. Local service endpoints
