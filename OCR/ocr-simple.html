@@ -4,7 +4,8 @@
   <title>Dynamic Web TWAIN - OCR Demo</title>
   <script src="Resources/dynamsoft.webtwain.initiate.js"></script>
   <script src="Resources/dynamsoft.webtwain.config.js"></script>
-  <script src="Resources/addon/dynamsoft.webtwain.addon.ocrkit.js"></script>
+  <script src="Resources/addon/dynamsoft.webtwain.addon.ocrconnector.js"></script>
+  <script src="Resources/addon/dynamsoft.webtwain.addon.pdf.js"></script>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
   <style>
     #dwtcontrolContainer {
@@ -16,7 +17,7 @@
     #result {
       margin-top: 20px;
       padding: 10px;
-      width: 300px;
+      width: 640px;
       height: 380px;
       border: 1px solid #ccc;
       background-color: #f9f9f9;
@@ -40,14 +41,13 @@
     <input type="button" value="Correct Orientation" onclick="CorrectOrientation();" />
     <input type="button" value="Recognize Text" onclick="Recognize();" />
     <label>
+      Engine:
+      <select id="engine" onchange="listLanguagesOfSelectedEngine(this.value);">
+      </select>
+    </label>
+    <label>
       Language:
-      <select id="language">
-        <option value="en">English</option>
-        <option value="fr">French</option>
-        <option value="es">Spanish</option>
-        <option value="de">German</option>
-        <option value="it">Italian</option>
-        <option value="pt">Portuguese</option>
+      <select id="language" onchange="ApplyResultDirection();">
       </select>
     </label>
     <label>
@@ -67,6 +67,14 @@
         <option value="plaintext">Plain Text</option>
       </select>
     </label>
+    <label>PDF/A:
+      <select id="pdfaOption">
+        <option value="pdf/a-1b">PDF/A-1b</option>
+        <option value="pdf/a-2b">PDF/A-2b</option>
+        <option value="pdf/a-3b">PDF/A-3b</option>
+        <option value="none">Don't save as PDF/A</option>
+      </select>
+    </label>
   </div>
 
   <div class="container">
@@ -75,21 +83,23 @@
   </div>
   
   <script type="text/javascript">
-    var DWTObject;
-    var storedOCRResults = {};
+    let DWTObject;
+    let storedOCRResults = {};
+    let ocrInfo;
 
+    Dynamsoft.DWT.ProductKey = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMTAwMjI3NzYzLU1UQXdNakkzTnpZekxWUnlhV0ZzVUhKdmFnIiwibWFpblNlcnZlclVSTCI6Imh0dHBzOi8vbWRscy5keW5hbXNvZnRvbmxpbmUuY29tLyIsIm9yZ2FuaXphdGlvbklEIjoiMTAwMjI3NzYzIiwic3RhbmRieVNlcnZlclVSTCI6Imh0dHBzOi8vc2Rscy5keW5hbXNvZnRvbmxpbmUuY29tLyIsImNoZWNrQ29kZSI6MjEwODQ0NjQwOH0="; //one-day trial license
     Dynamsoft.DWT.RegisterEvent("OnWebTwainReady", function () {
       DWTObject = Dynamsoft.DWT.GetWebTwain("dwtcontrolContainer");
       DWTObject.Viewer.width = "100%";
       DWTObject.Viewer.height = "100%";
-      CheckIsOCRInstalled();
+      GetInstalledOCRInfo();
       DWTObject.RegisterEvent('OnBufferChanged',
         function (bufferChangeInfo) {
           console.log('Buffer changed: ', bufferChangeInfo);
           if (DWTObject.CurrentImageIndexInBuffer != -1) {
             let imageID = DWTObject.IndexToImageID(DWTObject.CurrentImageIndexInBuffer);
             if (imageID in storedOCRResults) {
-              PrintPrettyResult(storedOCRResults[imageID]);
+              PrettyPrintResult(storedOCRResults[imageID]);
             } else {
               document.getElementById("result").innerText = "";
             }
@@ -145,10 +155,16 @@
     }
 
     async function CorrectOrientationForOne(index){
-      let result = await DWTObject.Addon.OCRKit.DetectPageOrientation(index);
-      console.log(result);
-      if (result.angle != 0) {
-        DWTObject.Rotate(index,result.angle,true);
+      try {
+        let engine = document.getElementById("engine").value;
+        let result = await DWTObject.Addon.OCRConnector.DetectPageOrientation(index,{engine:engine});
+        console.log(result);
+        if (result.angle != 0) {
+          DWTObject.Rotate(index,-result.angle,true);
+        }
+      }catch(error) {
+        console.log(error);
+        alert(error.message);
       }
     }
 
@@ -170,49 +186,100 @@
     }
 
     async function RecognizeOnePage(index){
+      let engine = document.getElementById("engine").value;
       let language = document.getElementById("language").value;
-      let result = await DWTObject.Addon.OCRKit.Recognize(index,{settings:{language:language}});
+      let result = await DWTObject.Addon.OCRConnector.Recognize(index,{
+        engine:{name:engine},
+        settings:{language:language}
+      });
       console.log(result);
       storedOCRResults[result.imageID] = result;
-      PrintPrettyResult(result);
+      PrettyPrintResult(result);
     }
 
-    function PrintPrettyResult(result){
+    function PrettyPrintResult(result){
       let prettyResult = "";
       result.blocks.forEach(block => {
         block.lines.forEach(line => {
-          line.words.forEach(word => {
-            prettyResult += word.value + " ";
-          });
+          if (line.value) {
+            prettyResult += line.value + " ";
+          }else{
+            line.words.forEach(word => {
+              prettyResult += word.value + " ";
+            });
+          }
           prettyResult += "\n";
         });
         prettyResult += "\n";
       });
       document.getElementById("result").innerText = prettyResult;
+      ApplyResultDirection();
     }
 
-    async function CheckIsOCRInstalled(){
-      try {
-        let info = await DWTObject.Addon.OCRKit.GetInstalledOCRInfo();
-        console.log(info);
-        if (info.version) {
-          return true;
-        }
-      } catch (error) {
-        alert(error.message);
+    let RTL_LANGUAGES = [
+      "ar"
+    ];
+
+    function isRtlLanguage(language) {
+      if (!language) {
         return false;
       }
-      alert("OCR Add-on is not installed. Please install it to use OCR features.");
-      return false;
+      let value = language.trim().toLowerCase();
+      return RTL_LANGUAGES.some(function (lang) {
+        return value === lang || new RegExp("^" + lang + "(?![a-z])").test(value);
+      });
+    }
+
+    function ApplyResultDirection() {
+      let resultEl = document.getElementById("result");
+      let language = document.getElementById("language").value;
+      resultEl.style.direction = isRtlLanguage(language) ? "rtl" : "";
+    }
+
+    async function GetInstalledOCRInfo(){
+      try {
+        ocrInfo = await DWTObject.Addon.OCRConnector.GetInstalledOCRInfo();
+        listEngines();
+      } catch (error) {
+        alert(error.message);
+      }
+    }
+    
+    function listEngines(){
+      let select = document.getElementById("engine");
+      select.innerHTML = "";
+      ocrInfo.engines.forEach(function (engine) {
+        let option = document.createElement("option");
+        option.value = engine.name;
+        option.text = engine.name;
+        select.add(option);
+      });
+      listLanguagesOfSelectedEngine(select.value);
+    }
+
+    function listLanguagesOfSelectedEngine(engine) {
+      let select = document.getElementById("language");
+      select.innerHTML = "";
+      let info = ocrInfo.engines.find(function (e) { return e.name === engine; });
+      info.languages.forEach(function (language) {
+        let option = document.createElement("option");
+        option.value = language;
+        option.text = language;
+        select.add(option);
+      });
     }
 
     async function SaveAsPDF(){
       try {
         let format = document.getElementById('outputFormat').value;
+        let pdfaOption = document.getElementById('pdfaOption').value;
+        DWTObject.Addon.PDF.Write.Setup({
+          pdfaVersion: pdfaOption !== "none" ? pdfaOption : ""
+        });
         if(format === "extralayer"){
-          await DWTObject.Addon.OCRKit.SaveToPath(DWTObject.SelectAllImages(),Dynamsoft.DWT.EnumDWT_OCRKitOutputFormat.PDF_WITH_EXTRA_TEXTLAYER);
+          await DWTObject.Addon.OCRConnector.SaveToPath(DWTObject.SelectAllImages(),Dynamsoft.DWT.EnumDWT_OCRConnectorOutputFormat.PDF_WITH_EXTRA_TEXTLAYER,"output.pdf");
         }else{
-          await DWTObject.Addon.OCRKit.SaveToPath(DWTObject.SelectAllImages(),Dynamsoft.DWT.EnumDWT_OCRKitOutputFormat.PDF_PLAIN_TEXT);
+          await DWTObject.Addon.OCRConnector.SaveToPath(DWTObject.SelectAllImages(),Dynamsoft.DWT.EnumDWT_OCRConnectorOutputFormat.PDF_PLAIN_TEXT,"output.pdf");
         }  
       } catch (error) {
         alert(error.message);
